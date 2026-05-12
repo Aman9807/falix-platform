@@ -28,8 +28,9 @@ export default function AuthCheck({ children, requireAdmin = false }: Props) {
       if (user) {
         setUser(user);
         
-        // Check if user is in the admin list
-        const isUserAdmin = ADMIN_EMAILS.includes(user.email?.toLowerCase() || "");
+        // Check if user is in the admin list (Case-Insensitive)
+        const lowerCaseAdminEmails = ADMIN_EMAILS.map(email => email.toLowerCase());
+        const isUserAdmin = lowerCaseAdminEmails.includes(user.email?.toLowerCase() || "");
         setIsAdmin(isUserAdmin);
 
         // If this page requires admin but the user isn't one, kick them out
