@@ -4,8 +4,9 @@ import { useState } from "react";
 import AuthCheck from "@/components/AuthCheck";
 import AdminForm from "@/components/AdminForm";
 import AdminAppList from "@/components/AdminAppList";
+import SectionReveal from "@/components/SectionReveal";
 import { motion, AnimatePresence } from "framer-motion";
-import { LayoutDashboard, LogOut, ExternalLink, Settings, Database, Plus } from "lucide-react";
+import { LayoutDashboard, LogOut, ExternalLink, Plus, Package } from "lucide-react";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
@@ -15,7 +16,6 @@ export default function AdminDashboard() {
   const router = useRouter();
   const [view, setView] = useState<"list" | "form">("list");
   const [editingApp, setEditingApp] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState<"catalog" | "storage" | "settings">("catalog");
 
   const handleLogout = async () => {
     await signOut(auth);
@@ -34,136 +34,87 @@ export default function AdminDashboard() {
 
   return (
     <AuthCheck>
-      <main className="min-h-screen bg-[#030303] text-white">
-        {/* Sidebar / Sidebar Navigation (Glassmorphism) */}
-        <div className="fixed top-0 left-0 h-full w-20 md:w-64 glass border-r-0 z-50 hidden sm:flex flex-col">
-          <div className="p-8">
-             <Link href="/" className="text-2xl font-black tracking-tighter text-gradient">FALIX</Link>
-          </div>
+      <div style={{ minHeight: "100vh", paddingTop: "8rem", paddingBottom: "5rem" }}>
+        <div className="container-xl">
           
-          <nav className="flex-1 px-4 space-y-2 mt-8">
-            <button 
-              onClick={() => setActiveTab("catalog")}
-              className={`w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all ${
-                activeTab === "catalog" ? "bg-white/5 text-blue-400 border border-blue-500/20 shadow-lg shadow-blue-500/5" : "text-white/30 hover:bg-white/5 hover:text-white"
-              }`}
-            >
-              <LayoutDashboard size={20} />
-              <span className="hidden md:block text-xs font-black uppercase tracking-widest">Catalog</span>
-            </button>
-            <button 
-              onClick={() => setActiveTab("storage")}
-              className={`w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all ${
-                activeTab === "storage" ? "bg-white/5 text-blue-400 border border-blue-500/20 shadow-lg shadow-blue-500/5" : "text-white/30 hover:bg-white/5 hover:text-white"
-              }`}
-            >
-              <Database size={20} />
-              <span className="hidden md:block text-xs font-black uppercase tracking-widest">Storage</span>
-            </button>
-            <button 
-              onClick={() => setActiveTab("settings")}
-              className={`w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all ${
-                activeTab === "settings" ? "bg-white/5 text-blue-400 border border-blue-500/20 shadow-lg shadow-blue-500/5" : "text-white/30 hover:bg-white/5 hover:text-white"
-              }`}
-            >
-              <Settings size={20} />
-              <span className="hidden md:block text-xs font-black uppercase tracking-widest">Settings</span>
-            </button>
-          </nav>
+          {/* Admin Header */}
+          <SectionReveal style={{ marginBottom: "3rem" }}>
+            <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "2rem", flexWrap: "wrap" }}>
+              <div>
+                <p className="label" style={{ marginBottom: "0.5rem" }}>Administrator</p>
+                <h1 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "2.5rem", fontWeight: 700, letterSpacing: "-0.03em" }}>
+                  Platform <span className="text-gradient">Manager.</span>
+                </h1>
+                <p style={{ fontSize: "0.875rem", color: "rgba(248,250,252,0.4)", marginTop: "0.5rem" }}>
+                  Logged in as: {auth.currentUser?.email}
+                </p>
+              </div>
 
-          <div className="p-4 mt-auto">
-            <button 
-              onClick={handleLogout}
-              className="w-full flex items-center gap-4 px-4 py-4 rounded-2xl text-red-400/50 hover:bg-red-400/10 hover:text-red-400 transition-all"
-            >
-              <LogOut size={20} />
-              <span className="hidden md:block text-xs font-black uppercase tracking-widest">Sign Out</span>
-            </button>
+              <div style={{ display: "flex", gap: "0.75rem" }}>
+                <Link href="/" target="_blank" className="btn-secondary" style={{ padding: "0.75rem 1.25rem" }}>
+                  <ExternalLink size={14} /> Live Site
+                </Link>
+                <button onClick={handleLogout} className="btn-secondary" style={{ color: "#f87171", borderColor: "rgba(248,113,113,0.15)", padding: "0.75rem 1.25rem" }}>
+                  <LogOut size={14} /> Sign Out
+                </button>
+              </div>
+            </div>
+          </SectionReveal>
+
+          {/* Main Dashboard Area */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "2rem" }}>
+            
+            {/* View Toggle / Actions */}
+            <SectionReveal delay={0.1}>
+              <div className="glass-card" style={{ padding: "1.25rem", display: "flex", justifyContent: "space-between", alignItems: "center", borderRadius: "1.25rem" }}>
+                <div style={{ display: "flex", gap: "0.5rem" }}>
+                  <button 
+                    onClick={() => setView("list")}
+                    style={{ 
+                      padding: "0.6rem 1.25rem", borderRadius: "0.875rem", fontSize: "0.75rem", fontWeight: 700,
+                      background: view === "list" ? "rgba(255,255,255,0.08)" : "transparent",
+                      color: view === "list" ? "#fff" : "rgba(248,250,252,0.4)",
+                      border: "none", cursor: "pointer", transition: "all 0.2s"
+                    }}
+                  >
+                    <Package size={14} style={{ marginRight: 6, verticalAlign: "middle" }} />
+                    App Catalog
+                  </button>
+                </div>
+
+                {view === "list" && (
+                  <button onClick={startAdding} className="btn-primary" style={{ padding: "0.6rem 1.25rem", fontSize: "0.75rem" }}>
+                    <Plus size={14} /> Add New App
+                  </button>
+                )}
+                {view === "form" && (
+                  <button onClick={() => setView("list")} className="btn-secondary" style={{ padding: "0.6rem 1.25rem", fontSize: "0.75rem" }}>
+                    Back to Catalog
+                  </button>
+                )}
+              </div>
+            </SectionReveal>
+
+            {/* Content Slot */}
+            <SectionReveal delay={0.2}>
+              <div style={{ minHeight: "400px" }}>
+                <AnimatePresence mode="wait">
+                  {view === "list" ? (
+                    <motion.div key="list" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
+                      <AdminAppList onEdit={startEditing} />
+                    </motion.div>
+                  ) : (
+                    <motion.div key="form" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
+                      <AdminForm editingApp={editingApp} onCancel={() => setView("list")} />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </SectionReveal>
+
           </div>
         </div>
-
-        {/* Main Content Area */}
-        <div className="sm:ml-20 md:ml-64 p-6 md:p-12">
-          <header className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-            >
-              <h1 className="text-3xl font-black tracking-tighter uppercase mb-2">Platform <span className="text-gradient">Manager</span></h1>
-              <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                Authorized System Session: {auth.currentUser?.email}
-              </p>
-            </motion.div>
-
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="flex gap-4"
-            >
-              {view === "list" ? (
-                <button 
-                  onClick={startAdding}
-                  className="bg-blue-600 text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-blue-500 shadow-xl shadow-blue-600/20 transition-all"
-                >
-                  <Plus size={14} />
-                  Add New App
-                </button>
-              ) : (
-                <button 
-                  onClick={() => setView("list")}
-                  className="glass px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-white/10 transition-all"
-                >
-                  Back to List
-                </button>
-              )}
-              <Link 
-                href="/" 
-                target="_blank"
-                className="glass px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-white/10 transition-all"
-              >
-                View Live Site
-                <ExternalLink size={14} />
-              </Link>
-            </motion.div>
-          </header>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="max-w-4xl"
-          >
-            <AnimatePresence mode="wait">
-              {view === "list" ? (
-                <motion.div
-                  key="list"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                >
-                  <AdminAppList onEdit={startEditing} />
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="form"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                >
-                  <AdminForm 
-                    editingApp={editingApp} 
-                    onCancel={() => setView("list")} 
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
-        </div>
-
-        {/* Decorative Background Elements */}
-        <div className="fixed top-0 right-0 w-[50%] h-[50%] bg-blue-600/5 rounded-full blur-[160px] -z-10 pointer-events-none" />
-      </main>
+      </div>
     </AuthCheck>
   );
 }

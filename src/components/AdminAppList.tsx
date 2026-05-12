@@ -32,71 +32,76 @@ export default function AdminAppList({ onEdit }: { onEdit: (app: App) => void })
       setApps(appsData);
       setLoading(false);
     });
-
     return () => unsubscribe();
   }, []);
 
   const handleDelete = async (id: string) => {
-    if (confirm("Are you sure you want to delete this app?")) {
+    if (confirm("Permanently delete this application from the ecosystem?")) {
       try {
         await deleteDoc(doc(db, "apps", id));
       } catch (error) {
-        console.error("Error deleting app: ", error);
-        alert("Failed to delete app.");
+        console.error(error);
       }
     }
   };
 
   if (loading) {
     return (
-      <div className="flex justify-center py-20">
-        <div className="w-8 h-8 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
+      <div style={{ display: "flex", justifyContent: "center", padding: "4rem" }}>
+        <div style={{ width: 32, height: 32, border: "3px solid rgba(37,99,235,0.1)", borderTopColor: "#2563EB", borderRadius: "50%", animation: "spin 1s linear infinite" }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <AnimatePresence>
+    <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+      <AnimatePresence mode="popLayout">
         {apps.map((app) => (
           <motion.div
             key={app.id}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
-            className="glass-card p-6 flex flex-col md:flex-row items-center justify-between gap-6 hover:bg-white/[0.05] transition-all"
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="glass-card"
+            style={{ padding: "1.25rem", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1.5rem", flexWrap: "wrap" }}
           >
-            <div className="flex items-center gap-6">
-              <img src={app.logo_url} alt={app.title} className="w-16 h-16 rounded-2xl object-cover shadow-lg border border-white/10" />
+            <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
+              <img src={app.logo_url} alt={app.title} style={{ width: 56, height: 56, borderRadius: "1rem", objectFit: "cover", border: "1px solid rgba(255,255,255,0.08)" }} />
               <div>
-                <h3 className="text-xl font-black uppercase tracking-widest">{app.title}</h3>
-                <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">{app.slug}.falix.in</p>
-                <div className="flex gap-2 mt-2">
-                    {app.windows_url && <Monitor size={12} className="text-blue-400" />}
-                    {app.mac_url && <Laptop size={12} className="text-indigo-400" />}
-                    {app.linux_url && <Cpu size={12} className="text-purple-400" />}
-                    {app.android_url && <Smartphone size={12} className="text-green-400" />}
+                <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "1.125rem", fontWeight: 700, letterSpacing: "-0.02em" }}>{app.title}</h3>
+                <p className="label" style={{ marginTop: "0.25rem", color: "#60a5fa" }}>{app.slug}.falix.in</p>
+                <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.6rem" }}>
+                  {app.windows_url && <Monitor size={12} style={{ color: "rgba(248,250,252,0.2)" }} />}
+                  {app.mac_url     && <Laptop size={12} style={{ color: "rgba(248,250,252,0.2)" }} />}
+                  {app.linux_url   && <Cpu size={12} style={{ color: "rgba(248,250,252,0.2)" }} />}
+                  {app.android_url && <Smartphone size={12} style={{ color: "rgba(248,250,252,0.2)" }} />}
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div style={{ display: "flex", gap: "0.5rem" }}>
               <a 
-                href={`http://${app.slug}.localhost:3000`} 
-                target="_blank" 
-                className="p-3 rounded-xl bg-white/5 text-white/40 hover:bg-white/10 hover:text-white transition-all"
+                href={`http://${app.slug}.localhost:3000`} target="_blank" 
+                style={{ width: 42, height: 42, borderRadius: "0.875rem", background: "rgba(255,255,255,0.04)", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(248,250,252,0.3)", transition: "all 0.2s" }}
+                onMouseEnter={e => e.currentTarget.style.color = "#fff"}
+                onMouseLeave={e => e.currentTarget.style.color = "rgba(248,250,252,0.3)"}
               >
                 <ExternalLink size={18} />
               </a>
               <button 
                 onClick={() => onEdit(app)}
-                className="p-3 rounded-xl bg-blue-500/10 text-blue-400 hover:bg-blue-500 hover:text-white transition-all"
+                style={{ width: 42, height: 42, borderRadius: "0.875rem", background: "rgba(37,99,235,0.1)", border: "none", display: "flex", alignItems: "center", justifyContent: "center", color: "#60a5fa", cursor: "pointer", transition: "all 0.2s" }}
+                onMouseEnter={e => { e.currentTarget.style.background = "#2563EB"; e.currentTarget.style.color = "#fff"; }}
+                onMouseLeave={e => { e.currentTarget.style.background = "rgba(37,99,235,0.1)"; e.currentTarget.style.color = "#60a5fa"; }}
               >
                 <Edit2 size={18} />
               </button>
               <button 
                 onClick={() => handleDelete(app.id)}
-                className="p-3 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all"
+                style={{ width: 42, height: 42, borderRadius: "0.875rem", background: "rgba(248,113,113,0.1)", border: "none", display: "flex", alignItems: "center", justifyContent: "center", color: "#f87171", cursor: "pointer", transition: "all 0.2s" }}
+                onMouseEnter={e => { e.currentTarget.style.background = "#ef4444"; e.currentTarget.style.color = "#fff"; }}
+                onMouseLeave={e => { e.currentTarget.style.background = "rgba(248,113,113,0.1)"; e.currentTarget.style.color = "#f87171"; }}
               >
                 <Trash2 size={18} />
               </button>
@@ -104,10 +109,10 @@ export default function AdminAppList({ onEdit }: { onEdit: (app: App) => void })
           </motion.div>
         ))}
       </AnimatePresence>
-      
+
       {apps.length === 0 && (
-        <div className="glass-card p-20 text-center opacity-40">
-           <p className="font-black uppercase tracking-widest text-xs">No applications published yet.</p>
+        <div className="glass-card" style={{ padding: "4rem", textAlign: "center", opacity: 0.3 }}>
+          <p className="label">No applications found in catalog</p>
         </div>
       )}
     </div>

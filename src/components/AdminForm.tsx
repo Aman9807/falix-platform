@@ -4,13 +4,13 @@ import { useState } from "react";
 import { db, storage } from "@/lib/firebase";
 import { collection, addDoc, updateDoc, doc, serverTimestamp } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { Plus, Upload, Check, Monitor, Laptop, Smartphone, Cpu } from "lucide-react";
+import { Plus, Upload, Check, Monitor, Laptop, Smartphone, Cpu, Save, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const platforms = [
   { id: "windows", name: "Windows", icon: Monitor },
-  { id: "mac", name: "macOS", icon: Laptop },
-  { id: "linux", name: "Linux", icon: Cpu },
+  { id: "mac",     name: "macOS",   icon: Laptop },
+  { id: "linux",   name: "Linux",   icon: Cpu },
   { id: "android", name: "Android", icon: Smartphone },
 ];
 
@@ -23,50 +23,32 @@ export default function AdminForm({ editingApp, onCancel }: { editingApp?: any, 
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(() => {
     const p = [];
     if (editingApp?.windows_url) p.push("windows");
-    if (editingApp?.mac_url) p.push("mac");
-    if (editingApp?.linux_url) p.push("linux");
+    if (editingApp?.mac_url)     p.push("mac");
+    if (editingApp?.linux_url)   p.push("linux");
     if (editingApp?.android_url) p.push("android");
     return p;
   });
   const [platformLinks, setPlatformLinks] = useState<Record<string, string>>({
     windows: editingApp?.windows_url || "",
-    mac: editingApp?.mac_url || "",
-    linux: editingApp?.linux_url || "",
+    mac:     editingApp?.mac_url || "",
+    linux:   editingApp?.linux_url || "",
     android: editingApp?.android_url || "",
   });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [themeColor, setThemeColor] = useState(editingApp?.themeColor || "#3b82f6");
-  const [features, setFeatures] = useState<string[]>(editingApp?.features || ["", "", ""]);
-  const [plans, setPlans] = useState<any[]>(editingApp?.plans || [
-    { name: "Starter", price: 0 },
-    { name: "Pro", price: 12 }
-  ]);
 
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setLogo(file);
-      setLogoPreview(URL.createObjectURL(file));
+    if (e.target.files?.[0]) {
+      setLogo(e.target.files[0]);
+      setLogoPreview(URL.createObjectURL(e.target.files[0]));
     }
-  };
-
-  const togglePlatform = (id: string) => {
-    setSelectedPlatforms((prev) =>
-      prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]
-    );
-  };
-
-  const handleLinkChange = (id: string, value: string) => {
-    setPlatformLinks((prev) => ({ ...prev, [id]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
-      let logoUrl = "";
+      let logoUrl = editingApp?.logo_url || "";
       if (logo) {
         const storageRef = ref(storage, `logos/${Date.now()}_${logo.name}`);
         await uploadBytes(storageRef, logo);
@@ -77,185 +59,121 @@ export default function AdminForm({ editingApp, onCancel }: { editingApp?: any, 
         title,
         slug: slug.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""),
         description,
-        logo_url: logoUrl || editingApp?.logo_url || "",
+        logo_url: logoUrl,
         windows_url: platformLinks.windows || null,
-        mac_url: platformLinks.mac || null,
-        linux_url: platformLinks.linux || null,
+        mac_url:     platformLinks.mac || null,
+        linux_url:   platformLinks.linux || null,
         android_url: platformLinks.android || null,
-        themeColor,
-        features: features.filter(f => f.trim() !== ""),
-        plans,
-        updated_at: serverTimestamp(),
+        updated_at:  serverTimestamp(),
       };
 
       if (editingApp?.id) {
         await updateDoc(doc(db, "apps", editingApp.id), appData);
       } else {
-        await addDoc(collection(db, "apps"), {
-          ...appData,
-          created_at: serverTimestamp(),
-        });
+        await addDoc(collection(db, "apps"), { ...appData, created_at: serverTimestamp() });
       }
 
       setSuccess(true);
-      if (onCancel) onCancel();
-      // Reset form
-      setTitle("");
-      setSlug("");
-      setDescription("");
-      setLogo(null);
-      setLogoPreview(null);
-      setSelectedPlatforms([]);
-      setPlatformLinks({});
-      setTimeout(() => setSuccess(false), 3000);
+      setTimeout(() => {
+        setSuccess(false);
+        if (onCancel) onCancel();
+      }, 1500);
     } catch (error) {
-      console.error("Error adding app: ", error);
-      alert("Failed to add app. Check console.");
+      console.error(error);
+      alert("Error saving application.");
     } finally {
       setLoading(false);
     }
   };
 
-  return (
-    <form onSubmit={handleSubmit} className="space-y-8">
-      <div className="glass-card space-y-6">
-        <h2 className="text-xl font-black uppercase tracking-widest flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Plus className="text-blue-400" />
-            {editingApp ? "Edit Application" : "App Metadata"}
-          </div>
-          {onCancel && (
-            <button type="button" onClick={onCancel} className="text-[10px] text-white/30 hover:text-white uppercase tracking-[0.2em] transition-all">
-                Cancel
-            </button>
-          )}
-        </h2>
+  const inputStyle = {
+    width: "100%", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
+    borderRadius: "1rem", padding: "1rem 1.25rem", color: "#fff", fontSize: "0.875rem", outline: "none",
+    transition: "border-color 0.2s"
+  };
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">App Title</label>
-            <input
-              type="text"
-              value={title}
+  return (
+    <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+      
+      {/* ── Metadata ── */}
+      <div className="glass-card" style={{ padding: "2rem", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+        <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "1.25rem", fontWeight: 700, display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          <Plus size={20} style={{ color: "#60a5fa" }} />
+          {editingApp ? "Edit Details" : "App Metadata"}
+        </h3>
+
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }} className="form-grid">
+          <div>
+            <p className="label" style={{ marginBottom: "0.625rem" }}>App Title</p>
+            <input 
+              style={inputStyle} value={title} required placeholder="e.g. SchoolOS Desktop"
               onChange={(e) => {
                 setTitle(e.target.value);
-                // Auto-generate slug if it's empty or matching previous title-slug
-                if (!slug || slug === title.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "")) {
-                   setSlug(e.target.value.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""));
-                }
+                if (!editingApp) setSlug(e.target.value.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""));
               }}
-              className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-4 text-sm focus:outline-none focus:border-blue-500/50 transition-all"
-              placeholder="e.g. SchoolOS Desktop"
-              required
+              onFocus={e => e.currentTarget.style.borderColor = "#2563EB"}
+              onBlur={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"}
             />
           </div>
-
-          <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Subdomain Slug</label>
-            <input
-              type="text"
-              value={slug}
+          <div>
+            <p className="label" style={{ marginBottom: "0.625rem" }}>Slug / Subdomain</p>
+            <input 
+              style={{ ...inputStyle, fontFamily: "monospace" }} value={slug} required placeholder="e.g. schoolos"
               onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""))}
-              className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-4 text-sm focus:outline-none focus:border-blue-500/50 transition-all font-mono"
-              placeholder="e.g. schoolos"
-              required
+              onFocus={e => e.currentTarget.style.borderColor = "#2563EB"}
+              onBlur={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"}
             />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Logo Artwork</label>
-            <div className="relative group cursor-pointer">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleLogoChange}
-                className="absolute inset-0 opacity-0 cursor-pointer z-10"
-              />
-              <div className="w-full bg-white/5 border border-dashed border-white/10 rounded-2xl py-3 px-4 flex items-center justify-between group-hover:bg-white/10 transition-all">
-                <div className="flex items-center gap-3">
-                  <Upload size={16} className="text-white/40" />
-                  <span className="text-xs text-white/60 font-medium">{logo ? logo.name : "Select PNG/SVG"}</span>
-                </div>
-                {logoPreview && (
-                  <img src={logoPreview} alt="Preview" className="w-8 h-8 rounded-lg object-cover" />
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Brand Accent Color</label>
-            <div className="flex gap-4">
-                <input
-                    type="color"
-                    value={themeColor}
-                    onChange={(e) => setThemeColor(e.target.value)}
-                    className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 p-1 cursor-pointer"
-                />
-                <input
-                    type="text"
-                    value={themeColor}
-                    onChange={(e) => setThemeColor(e.target.value)}
-                    className="flex-1 bg-white/5 border border-white/10 rounded-2xl py-4 px-4 text-xs font-mono focus:outline-none focus:border-blue-500/50 transition-all uppercase"
-                />
-            </div>
           </div>
         </div>
 
-        <div className="space-y-2">
-          <label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Product Description</label>
-          <textarea
-            value={description}
+        <div>
+          <p className="label" style={{ marginBottom: "0.625rem" }}>Description</p>
+          <textarea 
+            style={{ ...inputStyle, minHeight: 120, resize: "none" }} value={description} required
+            placeholder="What does this app do?"
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-4 text-sm focus:outline-none focus:border-blue-500/50 transition-all min-h-[100px]"
-            placeholder="Describe the application features and capabilities..."
-            required
+            onFocus={e => e.currentTarget.style.borderColor = "#2563EB"}
+            onBlur={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"}
           />
         </div>
 
-        <div className="space-y-4">
-          <label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1">Key Features (Max 4)</label>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {features.map((feature, i) => (
-                <input
-                    key={i}
-                    type="text"
-                    value={feature}
-                    onChange={(e) => {
-                        const newFeatures = [...features];
-                        newFeatures[i] = e.target.value;
-                        setFeatures(newFeatures);
-                    }}
-                    className="bg-white/5 border border-white/10 rounded-2xl py-3 px-4 text-xs focus:outline-none focus:border-blue-500/50 transition-all"
-                    placeholder={`Feature ${i + 1}`}
-                />
-            ))}
+        <div>
+          <p className="label" style={{ marginBottom: "0.625rem" }}>Logo Artwork</p>
+          <div style={{ position: "relative", cursor: "pointer" }}>
+            <input type="file" accept="image/*" onChange={handleLogoChange} style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer" }} />
+            <div style={{ ...inputStyle, borderStyle: "dashed", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", color: "rgba(248,250,252,0.4)" }}>
+                <Upload size={18} />
+                <span style={{ fontSize: "0.8125rem" }}>{logo ? logo.name : "Choose PNG or SVG"}</span>
+              </div>
+              {logoPreview && <img src={logoPreview} style={{ width: 32, height: 32, borderRadius: "0.5rem", objectFit: "cover" }} />}
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="glass-card space-y-8">
-        <h2 className="text-xl font-black uppercase tracking-widest flex items-center gap-2">
-          <Monitor className="text-blue-400" />
+      {/* ── Distribution ── */}
+      <div className="glass-card" style={{ padding: "2rem", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+        <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "1.25rem", fontWeight: 700, display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          <Monitor size={20} style={{ color: "#60a5fa" }} />
           Platform Distribution
-        </h2>
+        </h3>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {platforms.map((p) => {
-            const isSelected = selectedPlatforms.includes(p.id);
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "0.75rem" }} className="platforms-grid">
+          {platforms.map(({ id, name, icon: Icon }) => {
+            const isSelected = selectedPlatforms.includes(id);
             return (
               <button
-                key={p.id}
-                type="button"
-                onClick={() => togglePlatform(p.id)}
-                className={`p-4 rounded-3xl border transition-all flex flex-col items-center gap-3 ${
-                  isSelected 
-                    ? "bg-blue-500/10 border-blue-500/50 text-blue-400" 
-                    : "bg-white/5 border-white/5 text-white/20 hover:border-white/10"
-                }`}
+                key={id} type="button" onClick={() => setSelectedPlatforms(prev => isSelected ? prev.filter(p => p !== id) : [...prev, id])}
+                style={{ 
+                  padding: "1rem", borderRadius: "1rem", background: isSelected ? "rgba(37,99,235,0.1)" : "rgba(255,255,255,0.02)",
+                  border: isSelected ? "1px solid #2563EB" : "1px solid rgba(255,255,255,0.05)",
+                  color: isSelected ? "#fff" : "rgba(248,250,252,0.2)",
+                  display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem", cursor: "pointer", transition: "all 0.2s"
+                }}
               >
-                <p.icon size={24} />
-                <span className="text-[10px] font-black uppercase tracking-widest">{p.name}</span>
+                <Icon size={20} />
+                <span style={{ fontSize: "0.625rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>{name}</span>
               </button>
             );
           })}
@@ -263,24 +181,13 @@ export default function AdminForm({ editingApp, onCancel }: { editingApp?: any, 
 
         <AnimatePresence>
           {selectedPlatforms.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="space-y-4 pt-4 border-t border-white/5 overflow-hidden"
-            >
-              {selectedPlatforms.map((id) => (
-                <div key={id} className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-1 flex items-center gap-2">
-                    {platforms.find(p => p.id === id)?.name} GitHub URL
-                  </label>
-                  <input
-                    type="url"
-                    value={platformLinks[id] || ""}
-                    onChange={(e) => handleLinkChange(id, e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-4 text-sm focus:outline-none focus:border-blue-500/50 transition-all"
-                    placeholder="https://github.com/falix/repo/releases/..."
-                    required
+            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} style={{ overflow: "hidden", display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+              {selectedPlatforms.map(id => (
+                <div key={id}>
+                  <p className="label" style={{ marginBottom: "0.5rem" }}>{platforms.find(p => p.id === id)?.name} Download URL</p>
+                  <input 
+                    style={inputStyle} type="url" required value={platformLinks[id] || ""} placeholder="https://github.com/..."
+                    onChange={(e) => setPlatformLinks(prev => ({ ...prev, [id]: e.target.value }))}
                   />
                 </div>
               ))}
@@ -289,26 +196,27 @@ export default function AdminForm({ editingApp, onCancel }: { editingApp?: any, 
         </AnimatePresence>
       </div>
 
-      <button
-        type="submit"
-        disabled={loading}
-        className={`w-full py-6 rounded-3xl font-black text-lg uppercase tracking-widest transition-all flex items-center justify-center gap-3 ${
-          success 
-            ? "bg-green-500 text-white" 
-            : "bg-blue-600 text-white hover:bg-blue-500 shadow-xl shadow-blue-600/20"
-        } disabled:opacity-50`}
-      >
-        {loading ? (
-          "Synchronizing Database..."
-        ) : success ? (
-          <>
-            <Check size={24} />
-            {editingApp ? "Changes Saved" : "App Published"}
-          </>
-        ) : (
-          editingApp ? "Update Application" : "Publish Application"
+      {/* ── Actions ── */}
+      <div style={{ display: "flex", gap: "1rem" }}>
+        <button 
+          type="submit" disabled={loading} className="btn-primary" 
+          style={{ flex: 1, height: "4rem", justifyContent: "center", background: success ? "#34d399" : "var(--primary)" }}
+        >
+          {loading ? "Synchronizing..." : success ? <Check size={24} /> : editingApp ? "Save Changes" : "Publish Application"}
+        </button>
+        {onCancel && (
+          <button type="button" onClick={onCancel} className="btn-secondary" style={{ padding: "0 2rem" }}>
+            Cancel
+          </button>
         )}
-      </button>
+      </div>
+
+      <style>{`
+        @media (max-width: 640px) {
+          .form-grid { grid-template-columns: 1fr !important; }
+          .platforms-grid { grid-template-columns: 1fr 1fr !important; }
+        }
+      `}</style>
     </form>
   );
 }

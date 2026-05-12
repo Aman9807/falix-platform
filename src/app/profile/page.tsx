@@ -1,12 +1,12 @@
 "use client";
 
 import AuthCheck from "@/components/AuthCheck";
-import Navbar from "@/components/Navbar";
+import SectionReveal from "@/components/SectionReveal";
 import { auth, db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { User, CreditCard, ShieldCheck, Zap, LogOut } from "lucide-react";
+import { User, CreditCard, ShieldCheck, Zap, LogOut, Settings, Calendar, Mail } from "lucide-react";
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 
@@ -18,21 +18,23 @@ export default function ProfilePage() {
   useEffect(() => {
     const fetchUserData = async () => {
       if (auth.currentUser) {
-        const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
-        if (userDoc.exists()) {
-          setUserData(userDoc.data());
-        } else {
-          // Default data if doc doesn't exist yet
-          setUserData({
-            subscriptionStatus: "active", // Default for demo
-            plan: "Free",
-            joinedDate: new Date().toLocaleDateString(),
-          });
+        try {
+          const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
+          if (userDoc.exists()) {
+            setUserData(userDoc.data());
+          } else {
+            setUserData({
+              plan: "Free Tier",
+              joinedDate: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+              status: "Active"
+            });
+          }
+        } catch (e) {
+          console.error(e);
         }
       }
       setLoading(false);
     };
-
     fetchUserData();
   }, []);
 
@@ -43,112 +45,150 @@ export default function ProfilePage() {
 
   return (
     <AuthCheck>
-      <main className="min-h-screen bg-[#030303] text-white">
-        <Navbar />
-        
-        <div className="container mx-auto pt-48 px-6 pb-32">
-          <div className="max-w-4xl mx-auto">
-            <header className="flex flex-col md:flex-row items-center justify-between gap-8 mb-16">
-              <div className="flex items-center gap-8 text-center md:text-left">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-4xl font-black">
+      <div style={{ minHeight: "100vh", paddingTop: "8rem", paddingBottom: "5rem" }}>
+        <div className="container-xl">
+          
+          {/* Header Section */}
+          <SectionReveal style={{ marginBottom: "4rem" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "2rem", flexWrap: "wrap" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
+                <div style={{ 
+                  width: 80, height: 80, borderRadius: "2rem", 
+                  background: "linear-gradient(135deg, #2563EB, #7C3AED)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: "2rem", fontWeight: 700, color: "#fff",
+                  boxShadow: "0 8px 32px rgba(37,99,235,0.3)"
+                }}>
                   {auth.currentUser?.email?.[0].toUpperCase()}
                 </div>
                 <div>
-                  <h1 className="text-3xl font-black tracking-tighter uppercase mb-2">Member Profile</h1>
-                  <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em]">{auth.currentUser?.email}</p>
+                  <p className="label" style={{ marginBottom: "0.5rem" }}>Account Dashboard</p>
+                  <h1 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "2.5rem", fontWeight: 700, letterSpacing: "-0.03em" }}>
+                    Welcome back, <span className="text-gradient">User.</span>
+                  </h1>
                 </div>
               </div>
-              
+
               <button 
                 onClick={handleLogout}
-                className="glass px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-red-400/60 hover:text-red-400 hover:bg-red-400/5 transition-all flex items-center gap-2"
+                className="btn-secondary"
+                style={{ color: "#f87171", borderColor: "rgba(248,113,113,0.2)" }}
+                onMouseEnter={e => e.currentTarget.style.background = "rgba(248,113,113,0.05)"}
+                onMouseLeave={e => e.currentTarget.style.background = "rgba(255,255,255,0.05)"}
               >
-                <LogOut size={14} />
-                Terminate Session
+                <LogOut size={16} />
+                Sign Out
               </button>
-            </header>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Subscription Status Card */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="glass-card p-10 space-y-8"
-              >
-                <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-black uppercase tracking-widest flex items-center gap-3">
-                    <CreditCard size={20} className="text-blue-400" />
-                    Subscription
-                  </h2>
-                  <span className={`px-4 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${userData?.subscriptionStatus === 'active' ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
-                    {userData?.subscriptionStatus || "Inactive"}
-                  </span>
-                </div>
-
-                <div className="space-y-4 pt-4">
-                  <div className="flex justify-between items-center border-b border-white/5 pb-4">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-white/30">Current Plan</span>
-                    <span className="text-sm font-black uppercase tracking-widest text-blue-400">{userData?.plan || "Standard"}</span>
-                  </div>
-                  <div className="flex justify-between items-center border-b border-white/5 pb-4">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-white/30">Member Since</span>
-                    <span className="text-sm font-bold text-white/60">{userData?.joinedDate || "May 2026"}</span>
-                  </div>
-                </div>
-
-                <button className="w-full py-4 rounded-2xl bg-white text-black font-black text-[10px] uppercase tracking-widest hover:scale-[1.02] transition-transform">
-                  Upgrade Plan
-                </button>
-              </motion.div>
-
-              {/* Account Security Card */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="glass-card p-10 space-y-8"
-              >
-                <h2 className="text-xl font-black uppercase tracking-widest flex items-center gap-3">
-                  <ShieldCheck size={20} className="text-indigo-400" />
-                  Security
-                </h2>
-
-                <div className="space-y-6 pt-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white/20">
-                      <Zap size={18} />
-                    </div>
-                    <div>
-                      <h4 className="text-[10px] font-black uppercase tracking-widest mb-1">Two-Factor Auth</h4>
-                      <p className="text-[10px] font-medium text-white/20 uppercase tracking-widest">Enabled via Authenticator</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white/20">
-                      <User size={18} />
-                    </div>
-                    <div>
-                      <h4 className="text-[10px] font-black uppercase tracking-widest mb-1">Device Authorization</h4>
-                      <p className="text-[10px] font-medium text-white/20 uppercase tracking-widest">3 Active Sessions</p>
-                    </div>
-                  </div>
-                </div>
-
-                <button className="w-full py-4 rounded-2xl bg-white/5 border border-white/10 text-white/60 font-black text-[10px] uppercase tracking-widest hover:bg-white/10 transition-all">
-                  Manage Settings
-                </button>
-              </motion.div>
             </div>
+          </SectionReveal>
+
+          {/* Bento Grid */}
+          <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1.5rem" }} className="profile-grid">
+            
+            {/* Left Column: Main Info */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+              
+              {/* Account Overview */}
+              <SectionReveal delay={0.1}>
+                <div className="glass-card" style={{ padding: "2rem" }}>
+                  <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "1.25rem", fontWeight: 700, marginBottom: "2rem", display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                    <User size={20} style={{ color: "#60a5fa" }} />
+                    Personal Information
+                  </h3>
+                  
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2.5rem" }} className="info-grid">
+                    <div>
+                      <p className="label" style={{ marginBottom: "0.5rem" }}>Email Address</p>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.625rem", color: "rgba(248,250,252,0.8)", fontSize: "0.9375rem", fontWeight: 500 }}>
+                        <Mail size={16} style={{ opacity: 0.3 }} />
+                        {auth.currentUser?.email}
+                      </div>
+                    </div>
+                    <div>
+                      <p className="label" style={{ marginBottom: "0.5rem" }}>Member Since</p>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.625rem", color: "rgba(248,250,252,0.8)", fontSize: "0.9375rem", fontWeight: 500 }}>
+                        <Calendar size={16} style={{ opacity: 0.3 }} />
+                        {userData?.joinedDate || "May 2026"}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </SectionReveal>
+
+              {/* Subscriptions */}
+              <SectionReveal delay={0.2}>
+                <div className="glass-card" style={{ padding: "2rem", background: "rgba(37,99,235,0.03)" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "2.5rem" }}>
+                    <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "1.25rem", fontWeight: 700, display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                      <CreditCard size={20} style={{ color: "#60a5fa" }} />
+                      Subscription Plan
+                    </h3>
+                    <span style={{ 
+                      padding: "0.4rem 0.8rem", borderRadius: "0.75rem", 
+                      fontSize: "0.7rem", fontWeight: 800, textTransform: "uppercase", 
+                      letterSpacing: "0.08em", background: "#34d39920", color: "#34d399" 
+                    }}>
+                      {userData?.status || "Active"}
+                    </span>
+                  </div>
+
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "2rem", flexWrap: "wrap" }}>
+                    <div>
+                      <h4 style={{ fontSize: "1.5rem", fontWeight: 800, fontFamily: "'Space Grotesk', sans-serif" }}>{userData?.plan || "Starter Plan"}</h4>
+                      <p style={{ fontSize: "0.875rem", color: "rgba(248,250,252,0.4)", marginTop: "0.4rem" }}>Next billing cycle: June 12, 2026</p>
+                    </div>
+                    <button className="btn-primary" style={{ padding: "0.75rem 1.5rem", fontSize: "0.8125rem" }}>
+                      Upgrade Plan
+                    </button>
+                  </div>
+                </div>
+              </SectionReveal>
+            </div>
+
+            {/* Right Column: Security & Settings */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+              <SectionReveal delay={0.3}>
+                <div className="glass-card" style={{ padding: "2rem" }}>
+                  <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "1.25rem", fontWeight: 700, marginBottom: "2rem", display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                    <ShieldCheck size={20} style={{ color: "#60a5fa" }} />
+                    Security
+                  </h3>
+
+                  <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+                    {[
+                      { icon: <Zap size={16} />, title: "Two-Factor Auth", status: "Enabled", color: "#34d399" },
+                      { icon: <User size={16} />, title: "Active Sessions", status: "3 Devices", color: "rgba(248,250,252,0.4)" }
+                    ].map((item, i) => (
+                      <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "1rem", background: "rgba(255,255,255,0.03)", borderRadius: "1rem", border: "1px solid rgba(255,255,255,0.05)" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                          <div style={{ color: "rgba(248,250,252,0.2)" }}>{item.icon}</div>
+                          <span style={{ fontSize: "0.875rem", fontWeight: 600 }}>{item.title}</span>
+                        </div>
+                        <span style={{ fontSize: "0.75rem", fontWeight: 700, color: item.color }}>{item.status}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <button className="btn-secondary" style={{ width: "100%", marginTop: "2rem", justifyContent: "center", height: "3.5rem" }}>
+                    <Settings size={18} />
+                    Account Settings
+                  </button>
+                </div>
+              </SectionReveal>
+            </div>
+
           </div>
         </div>
 
-        {/* Decorative Background */}
-        <div className="fixed top-0 left-0 w-full h-full -z-10 pointer-events-none">
-           <div className="absolute top-[-10%] right-[-10%] w-[60%] h-[60%] bg-blue-600/5 rounded-full blur-[160px]" />
-           <div className="absolute bottom-[-10%] left-[-10%] w-[60%] h-[60%] bg-indigo-600/5 rounded-full blur-[160px]" />
-        </div>
-      </main>
+        <style>{`
+          @media (max-width: 1024px) {
+            .profile-grid { grid-template-columns: 1fr !important; }
+          }
+          @media (max-width: 640px) {
+            .info-grid { grid-template-columns: 1fr !important; gap: 1.5rem !important; }
+          }
+        `}</style>
+      </div>
     </AuthCheck>
   );
 }
