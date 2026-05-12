@@ -4,12 +4,12 @@ import { useEffect, useState } from "react";
 import { auth } from "@/lib/firebase";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { useRouter } from "next/navigation";
-
 // 🔐 THE MASTER ADMIN LIST
-// Add your email here to get access to the Admin Dashboard
+// Add your Google/Gmail account email here:
 const ADMIN_EMAILS = [
-  "khant@fatima.com", // Example (Update this with your real email!)
-  "aman9807@github.com", // Example based on your push
+  "khantafazzul740@gmail.com",
+  "aman9807@github.com",
+  "ENTER_YOUR_GMAIL_HERE",
 ];
 
 interface Props {
@@ -27,15 +27,17 @@ export default function AuthCheck({ children, requireAdmin = false }: Props) {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user);
-        
-        // Check if user is in the admin list (Case-Insensitive)
-        const lowerCaseAdminEmails = ADMIN_EMAILS.map(email => email.toLowerCase());
-        const isUserAdmin = lowerCaseAdminEmails.includes(user.email?.toLowerCase() || "");
+
+        // Check if user is in the admin list (Case-Insensitive & Trimmed)
+        const userEmail = user.email?.toLowerCase().trim() || "";
+        const lowerCaseAdminEmails = ADMIN_EMAILS.map(email => email.toLowerCase().trim());
+        const isUserAdmin = lowerCaseAdminEmails.includes(userEmail);
         setIsAdmin(isUserAdmin);
 
         // If this page requires admin but the user isn't one, kick them out
         if (requireAdmin && !isUserAdmin) {
-          console.warn("[Security] Unauthorized admin access attempt by:", user.email);
+          console.warn("[Security] Unauthorized admin access attempt by:", userEmail);
+          // Redirecting to landing page as they aren't authorized for admin
           router.push("/");
         }
       } else {

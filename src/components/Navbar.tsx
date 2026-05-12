@@ -7,6 +7,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { auth } from "@/lib/firebase";
 import { onAuthStateChanged, User as FBUser } from "firebase/auth";
+import { ADMIN_EMAILS } from "@/lib/constants";
+import { ShieldAlert } from "lucide-react";
 
 const NAV_LINKS = [
   { name: "About",     href: "/about" },
@@ -19,10 +21,19 @@ export default function Navbar() {
   const [scrolled,    setScrolled]    = useState(false);
   const [mobileOpen,  setMobileOpen]  = useState(false);
   const [user,        setUser]        = useState<FBUser | null>(null);
+  const [isAdmin,     setIsAdmin]     = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, u => setUser(u));
+    const unsub = onAuthStateChanged(auth, u => {
+      setUser(u);
+      if (u && u.email) {
+        const email = u.email.toLowerCase().trim();
+        setIsAdmin(ADMIN_EMAILS.map(e => e.toLowerCase().trim()).includes(email));
+      } else {
+        setIsAdmin(false);
+      }
+    });
     return unsub;
   }, []);
 
@@ -122,19 +133,37 @@ export default function Navbar() {
             {/* Right actions */}
             <div className="hidden lg:flex items-center gap-2">
               {user ? (
-                <Link
-                  href="/profile"
-                  style={{
-                    display: "flex", alignItems: "center", gap: "0.4rem",
-                    fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.1em",
-                    textTransform: "uppercase", color: "#60a5fa",
-                    padding: "0.4rem 0.75rem", borderRadius: 9999,
-                    transition: "color 0.15s",
-                  }}
-                >
-                  <User size={14} />
-                  Profile
-                </Link>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  {isAdmin && (
+                    <Link
+                      href="/admin"
+                      style={{
+                        display: "flex", alignItems: "center", gap: "0.4rem",
+                        fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.1em",
+                        textTransform: "uppercase", color: "#f87171",
+                        padding: "0.4rem 0.75rem", borderRadius: 9999,
+                        background: "rgba(248,113,113,0.05)",
+                        transition: "all 0.2s",
+                      }}
+                    >
+                      <ShieldAlert size={14} />
+                      Admin
+                    </Link>
+                  )}
+                  <Link
+                    href="/profile"
+                    style={{
+                      display: "flex", alignItems: "center", gap: "0.4rem",
+                      fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.1em",
+                      textTransform: "uppercase", color: "#60a5fa",
+                      padding: "0.4rem 0.75rem", borderRadius: 9999,
+                      transition: "color 0.15s",
+                    }}
+                  >
+                    <User size={14} />
+                    Profile
+                  </Link>
+                </div>
               ) : (
                 <Link
                   href="/login"
