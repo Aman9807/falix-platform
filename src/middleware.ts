@@ -5,30 +5,44 @@ export function middleware(request: NextRequest) {
   const url = request.nextUrl;
   const hostname = request.headers.get('host') || '';
 
-  // Define reserved subdomains
-  const reservedSubdomains = ['www', 'admin', 'login', 'api'];
+  // 1. Define reserved paths/subdomains
+  const reservedSubdomains = ['www', 'admin', 'login', 'api', 'profile', 'about', 'pricing', 'reviews', 'downloads'];
 
-  // Extract subdomain (e.g., schoolos.falix.in -> schoolos)
-  // For local development, this handles schoolos.localhost:3000
+  // 2. Extract subdomain logic
   const parts = hostname.split('.');
   let subdomain = '';
 
-  if (parts.length >= 3) {
-    // If it's something like schoolos.falix.in
-    subdomain = parts[0];
-  } else if (parts.length === 2 && parts[1].includes('localhost')) {
-    // If it's something like schoolos.localhost
+  // Localhost handling (e.g., schoolos.localhost:3000)
+  if (hostname.includes('localhost')) {
+    if (parts.length >= 2 && !parts[0].includes('localhost')) {
+      subdomain = parts[0];
+    }
+  } 
+  // Vercel handling (e.g., schoolos.falix-platform.vercel.app)
+  else if (hostname.includes('vercel.app')) {
+    // If it has 4 or more parts, the first part is a subdomain
+    // e.g., app.name.vercel.app -> parts.length is 4
+    if (parts.length >= 4) {
+      subdomain = parts[0];
+    }
+  }
+  // Custom Domain handling (e.g., schoolos.falix.in)
+  else if (parts.length >= 3) {
     subdomain = parts[0];
   }
 
-  // If there's a subdomain and it's not reserved
-  if (subdomain && !reservedSubdomains.includes(subdomain)) {
-    // Check if we are already in the app-sites path to avoid infinite loops
-    if (!url.pathname.startsWith('/app-sites')) {
-      // Rewrite to the internal dynamic route
-      // e.g., schoolos.falix.in/ -> /app-sites/schoolos
-      // e.g., schoolos.falix.in/download -> /app-sites/schoolos/download
-      return NextResponse.rewrite(new URL(`/app-sites/${subdomain}${url.pathname}`, request.url));
+  // 3. Traffic Redirection
+  // If we found a subdomain AND it's not a reserved keyword
+  if (subdomain && !reservedSubdomains.includes(subdomain.toLowerCase())) {
+    
+    // Avoid infinite loops if we are already in the internal path
+    if (!url.pathname.startsWith('/app-sites') && !url.pathname.startsWith('/_next')) {
+      
+      // Rewrite the URL to the app-sites dynamic route
+      // e.g. schoolos.falix.in/download -> /app-sites/schoolos/download
+      const rewriteUrl = new URL(`/app-sites/${subdomain}${url.pathname}`, request.url);
+      console.log(`[Middleware] Rewriting ${hostname}${url.pathname} -> ${rewriteUrl.pathname}`);
+      return NextResponse.rewrite(rewriteUrl);
     }
   }
 
