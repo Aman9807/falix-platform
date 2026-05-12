@@ -97,10 +97,14 @@ export default function ProfilePage() {
                   </h3>
                   
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2.5rem" }} className="info-grid">
-                    <div>
+                    <div style={{ minWidth: 0 }}>
                       <p className="label" style={{ marginBottom: "0.5rem" }}>Email Address</p>
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.625rem", color: "rgba(248,250,252,0.8)", fontSize: "0.9375rem", fontWeight: 500 }}>
-                        <Mail size={16} style={{ opacity: 0.3 }} />
+                      <div style={{ 
+                        display: "flex", alignItems: "center", gap: "0.625rem", 
+                        color: "rgba(248,250,252,0.8)", fontSize: "0.9375rem", fontWeight: 500,
+                        overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"
+                      }}>
+                        <Mail size={16} style={{ opacity: 0.3, flexShrink: 0 }} />
                         {auth.currentUser?.email}
                       </div>
                     </div>

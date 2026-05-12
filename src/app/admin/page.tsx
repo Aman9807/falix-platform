@@ -33,19 +33,22 @@ export default function AdminDashboard() {
   };
 
   return (
-    <AuthCheck>
+    <AuthCheck requireAdmin>
       <div style={{ minHeight: "100vh", paddingTop: "8rem", paddingBottom: "5rem" }}>
         <div className="container-xl">
           
           {/* Admin Header */}
           <SectionReveal style={{ marginBottom: "3rem" }}>
             <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "2rem", flexWrap: "wrap" }}>
-              <div>
+              <div style={{ flex: 1, minWidth: "200px" }}>
                 <p className="label" style={{ marginBottom: "0.5rem" }}>Administrator</p>
                 <h1 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "2.5rem", fontWeight: 700, letterSpacing: "-0.03em" }}>
                   Platform <span className="text-gradient">Manager.</span>
                 </h1>
-                <p style={{ fontSize: "0.875rem", color: "rgba(248,250,252,0.4)", marginTop: "0.5rem" }}>
+                <p style={{ 
+                  fontSize: "0.875rem", color: "rgba(248,250,252,0.4)", marginTop: "0.5rem",
+                  maxWidth: "300px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" 
+                }}>
                   Logged in as: {auth.currentUser?.email}
                 </p>
               </div>
@@ -54,7 +57,13 @@ export default function AdminDashboard() {
                 <Link href="/" target="_blank" className="btn-secondary" style={{ padding: "0.75rem 1.25rem" }}>
                   <ExternalLink size={14} /> Live Site
                 </Link>
-                <button onClick={handleLogout} className="btn-secondary" style={{ color: "#f87171", borderColor: "rgba(248,113,113,0.15)", padding: "0.75rem 1.25rem" }}>
+                <button 
+                  onClick={handleLogout} 
+                  className="btn-secondary" 
+                  style={{ padding: "0.75rem 1.25rem", border: "1px solid rgba(255,255,255,0.05)" }}
+                  onMouseEnter={e => { e.currentTarget.style.color = "#f87171"; e.currentTarget.style.borderColor = "rgba(248,113,113,0.2)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = "#fff"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.05)"; }}
+                >
                   <LogOut size={14} /> Sign Out
                 </button>
               </div>
