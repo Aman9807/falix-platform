@@ -44,7 +44,7 @@ export default function Hero() {
           </span>
           <Zap size={12} style={{ color: "#60a5fa" }} />
           <span style={{ fontSize: "0.75rem", fontWeight: 600, color: "rgba(248,250,252,0.7)", letterSpacing: "0.04em" }}>
-            Falix Platform 2.0 is here
+            Cognis Platform 2.0 is here
           </span>
         </motion.div>
 

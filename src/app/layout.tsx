@@ -4,7 +4,7 @@ import GravityBackground from "@/components/GravityBackground";
 import Navbar from "@/components/Navbar";
 
 export const metadata: Metadata = {
-  title: "Falix Platform | Beyond Software",
+  title: "Cognis Platform | Beyond Software",
   description: "The next generation of sports management and SaaS ecosystems. High-performance tools engineered for the modern digital athlete.",
 };
 

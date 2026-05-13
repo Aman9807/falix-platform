@@ -3,14 +3,14 @@
 import { Star } from "lucide-react";
 
 const REVIEWS = [
-  { name: "Alex M.",    role: "Head Coach, FC Velocity",       rating: 5, text: "Falix transformed how we manage our entire academy. The real-time analytics alone are worth it." },
+  { name: "Alex M.",    role: "Head Coach, FC Velocity",       rating: 5, text: "Cognis transformed how we manage our entire academy. The real-time analytics alone are worth it." },
   { name: "Priya S.",   role: "Operations Director",           rating: 5, text: "Clean, fast, and incredibly powerful. Our team onboarded in a single afternoon." },
   { name: "Jordan K.",  role: "Software Architect",            rating: 5, text: "The subdomain system is brilliant. Each club gets their own branded portal automatically." },
   { name: "Maria L.",   role: "Sports Scientist",              rating: 5, text: "Finally an app that understands how sports organizations actually work. Love the bento dashboard." },
-  { name: "Tom H.",     role: "Performance Analyst",           rating: 5, text: "Replaced three tools with Falix. The reporting is leagues ahead of anything else we tried." },
+  { name: "Tom H.",     role: "Performance Analyst",           rating: 5, text: "Replaced three tools with Cognis. The reporting is leagues ahead of anything else we tried." },
   { name: "Yuki T.",    role: "Club Administrator",            rating: 5, text: "The pricing is ridiculously fair for what you get. Our whole federation switched within a month." },
   { name: "Carlos B.",  role: "Technical Director",            rating: 5, text: "Incredible velocity of updates. The team ships quality features faster than anyone else." },
-  { name: "Aisha W.",   role: "Digital Transformation Lead",   rating: 5, text: "Falix's API integration allowed us to sync our existing systems seamlessly. Zero downtime." },
+  { name: "Aisha W.",   role: "Digital Transformation Lead",   rating: 5, text: "Cognis's API integration allowed us to sync our existing systems seamlessly. Zero downtime." },
 ];
 
 function ReviewCard({ name, role, rating, text }: typeof REVIEWS[0]) {

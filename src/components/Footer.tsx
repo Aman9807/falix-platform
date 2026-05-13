@@ -22,7 +22,7 @@ export default function Footer() {
               background: "linear-gradient(135deg,#2563EB,#7C3AED)",
               WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
             }}>
-              FALIX
+              COGNIS
             </span>
             <p style={{ marginTop: "0.75rem", fontSize: "0.8125rem", color: "rgba(248,250,252,0.35)", lineHeight: 1.7, maxWidth: "26ch" }}>
               High-performance sports management and SaaS ecosystem, engineered for the modern digital athlete.
@@ -59,7 +59,7 @@ export default function Footer() {
           display: "flex", justifyContent: "space-between", alignItems: "center",
           flexWrap: "wrap", gap: "0.5rem",
         }}>
-          <p className="label">© 2026 Falix Platform. All rights reserved.</p>
+          <p className="label">© 2026 Cognis Platform. All rights reserved.</p>
           <p className="label">Built with Next.js · Firebase · Framer Motion</p>
         </div>
       </div>

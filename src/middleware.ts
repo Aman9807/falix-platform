@@ -18,7 +18,7 @@ export function middleware(request: NextRequest) {
       subdomain = parts[0];
     }
   } 
-  // Vercel handling (e.g., schoolos.falix-platform.vercel.app)
+  // Vercel handling (e.g., schoolos.cognis-platform.vercel.app)
   else if (hostname.includes('vercel.app')) {
     // If it has 4 or more parts, the first part is a subdomain
     // e.g., app.name.vercel.app -> parts.length is 4
@@ -26,12 +26,18 @@ export function middleware(request: NextRequest) {
       subdomain = parts[0];
     }
   }
-  // Custom Domain handling (e.g., schoolos.falix.in)
+  // Custom Domain handling (e.g., schoolos.cognis.in)
   else if (parts.length >= 3) {
     subdomain = parts[0];
   }
 
-  // 3. Traffic Redirection
+  // 3. Special Subdomain Rewrites
+  if (subdomain.toLowerCase() === 'admin') {
+    const rewriteUrl = new URL(`/admin${url.pathname === '/' ? '' : url.pathname}`, request.url);
+    return NextResponse.rewrite(rewriteUrl);
+  }
+
+  // 4. Traffic Redirection
   // If we found a subdomain AND it's not a reserved keyword
   if (subdomain && !reservedSubdomains.includes(subdomain.toLowerCase())) {
     
@@ -39,7 +45,7 @@ export function middleware(request: NextRequest) {
     if (!url.pathname.startsWith('/app-sites') && !url.pathname.startsWith('/_next')) {
       
       // Rewrite the URL to the app-sites dynamic route
-      // e.g. schoolos.falix.in/download -> /app-sites/schoolos/download
+      // e.g. schoolos.cognis.in/download -> /app-sites/schoolos/download
       const rewriteUrl = new URL(`/app-sites/${subdomain}${url.pathname}`, request.url);
       console.log(`[Middleware] Rewriting ${hostname}${url.pathname} -> ${rewriteUrl.pathname}`);
       return NextResponse.rewrite(rewriteUrl);

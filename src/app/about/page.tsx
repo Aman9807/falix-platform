@@ -3,14 +3,14 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "About | Falix Platform",
-  description: "Learn about the mission, values, and team behind Falix.",
+  title: "About | Cognis Platform",
+  description: "Learn about the mission, values, and team behind Cognis.",
 };
 
 const MILESTONES = [
-  { year: "2022", title: "Founded",          desc: "Falix was born from a need for modern sports management tools that don't look like they're from 2009." },
+  { year: "2022", title: "Founded",          desc: "Cognis was born from a need for modern sports management tools that don't look like they're from 2009." },
   { year: "2023", title: "First App Ships",  desc: "SchoolOS — our flagship sports academy management app — launched to 50 pilot academies." },
-  { year: "2024", title: "Platform Launch",  desc: "Falix Platform 1.0 launched. Subdomain routing, multi-tenant architecture, and admin dashboards." },
+  { year: "2024", title: "Platform Launch",  desc: "Cognis Platform 1.0 launched. Subdomain routing, multi-tenant architecture, and admin dashboards." },
   { year: "2026", title: "2.0 — Beyond",     desc: "A complete platform redesign. New engine, new design system, and a new vision for sports SaaS." },
 ];
 
@@ -38,7 +38,7 @@ export default function AboutPage() {
             Built for the <span className="text-gradient">digital athlete.</span>
           </h1>
           <p style={{ fontSize: "1.0625rem", color: "rgba(248,250,252,0.5)", lineHeight: 1.7 }}>
-            Falix started as a side project to fix the broken tools sports organizations were forced to use.
+            Cognis started as a side project to fix the broken tools sports organizations were forced to use.
             Today we serve thousands of teams across dozens of countries.
           </p>
         </div>
@@ -94,7 +94,7 @@ export default function AboutPage() {
             Join the journey.
           </h2>
           <p style={{ fontSize: "0.9375rem", color: "rgba(248,250,252,0.45)", marginBottom: "1.75rem", maxWidth: "40ch", margin: "0 auto 1.75rem" }}>
-            We're just getting started. The best version of Falix is the one we build together with our community.
+            We're just getting started. The best version of Cognis is the one we build together with our community.
           </p>
           <Link href="/downloads" className="btn-primary">
             Get Started <ArrowRight size={15} />

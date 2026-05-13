@@ -95,7 +95,7 @@ export default function Navbar() {
                 flexShrink: 0,
               }}
             >
-              FALIX
+              COGNIS
             </Link>
 
             {/* Desktop links */}
