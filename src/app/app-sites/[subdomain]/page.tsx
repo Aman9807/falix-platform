@@ -26,7 +26,7 @@ export default async function AppSubdomainPage({ params }: { params: { subdomain
         <div className="text-center space-y-4">
           <h1 className="text-6xl font-black tracking-tighter">404</h1>
           <p className="text-white/40 uppercase tracking-widest font-bold">Application Not Found</p>
-          <Link href="https://cognis.in" className="text-blue-500 hover:underline">Back to Cognis</Link>
+          <Link href="https://flynx.site" className="text-blue-500 hover:underline">Back to Flynx</Link>
         </div>
       </div>
     );
@@ -106,7 +106,7 @@ export default async function AppSubdomainPage({ params }: { params: { subdomain
                     <>
                         <div className="glass-card lg:col-span-2 p-16 flex flex-col justify-end min-h-[500px]">
                             <h3 className="text-5xl font-black mb-6 uppercase tracking-tighter">Native Performance</h3>
-                            <p className="text-white/40 text-xl font-bold uppercase tracking-tight">Optimized for every architecture. Get the best out of your hardware with Cognis's high-speed engine.</p>
+                            <p className="text-white/40 text-xl font-bold uppercase tracking-tight">Optimized for every architecture. Get the best out of your hardware with Flynx's high-speed engine.</p>
                         </div>
                         <div className="glass-card p-16 flex flex-col justify-end min-h-[500px]">
                             <h3 className="text-5xl font-black mb-6 uppercase tracking-tighter">Secure</h3>
@@ -152,8 +152,8 @@ export default async function AppSubdomainPage({ params }: { params: { subdomain
 
       <footer className="w-full py-24 px-6 border-t border-white/5 mt-auto">
         <div className="max-content flex flex-col md:flex-row justify-between items-center gap-12 opacity-20">
-            <span className="font-black tracking-tighter text-4xl">COGNIS</span>
-            <p className="text-xs font-black uppercase tracking-[0.3em]">© 2026 {appData.title.toUpperCase()}. POWERED BY COGNIS ENGINE.</p>
+            <span className="font-black tracking-tighter text-4xl">FLYNX</span>
+            <p className="text-xs font-black uppercase tracking-[0.3em]">© 2026 {appData.title.toUpperCase()}. POWERED BY FLYNX ENGINE.</p>
         </div>
       </footer>
     </main>

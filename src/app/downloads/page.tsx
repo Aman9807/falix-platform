@@ -50,7 +50,7 @@ export default function DownloadsPage() {
             App <span className="text-gradient">Downloads.</span>
           </h1>
           <p style={{ fontSize: "1rem", color: "rgba(248,250,252,0.45)", maxWidth: "50ch", lineHeight: 1.65 }}>
-            Download any Cognis application for your platform. All apps are signed, notarized, and automatically updated.
+            Download any Flynx application for your platform. All apps are signed, notarized, and automatically updated.
           </p>
         </motion.div>
 

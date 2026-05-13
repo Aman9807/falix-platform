@@ -98,7 +98,7 @@ export default async function DownloadPage({ params }: { params: { subdomain: st
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-20">
              <div className="glass-card p-8 space-y-4">
                 <h4 className="font-black uppercase tracking-widest text-xs text-blue-400">Security</h4>
-                <p className="text-xs text-white/40 leading-relaxed font-medium">All binaries are signed with Cognis's official certificate and scanned for vulnerabilities.</p>
+                <p className="text-xs text-white/40 leading-relaxed font-medium">All binaries are signed with Flynx's official certificate and scanned for vulnerabilities.</p>
              </div>
              <div className="glass-card p-8 space-y-4">
                 <h4 className="font-black uppercase tracking-widest text-xs text-blue-400">Updates</h4>
@@ -106,7 +106,7 @@ export default async function DownloadPage({ params }: { params: { subdomain: st
              </div>
              <div className="glass-card p-8 space-y-4">
                 <h4 className="font-black uppercase tracking-widest text-xs text-blue-400">Support</h4>
-                <p className="text-xs text-white/40 leading-relaxed font-medium">Need help? Join our community or contact support at help@cognis.in.</p>
+                <p className="text-xs text-white/40 leading-relaxed font-medium">Need help? Join our community or contact support at help@flynx.site.</p>
              </div>
           </div>
         </div>
@@ -114,8 +114,8 @@ export default async function DownloadPage({ params }: { params: { subdomain: st
 
       <footer className="w-full py-20 px-6 border-t border-white/5 mt-auto">
         <div className="container mx-auto flex justify-between items-center opacity-40">
-            <span className="font-black tracking-tighter text-2xl">COGNIS</span>
-            <p className="text-xs font-bold uppercase tracking-widest">© 2026 COGNIS PLATFORM.</p>
+            <span className="font-black tracking-tighter text-2xl">FLYNX</span>
+            <p className="text-xs font-bold uppercase tracking-widest">© 2026 FLYNX PLATFORM.</p>
         </div>
       </footer>
     </main>

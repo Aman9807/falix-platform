@@ -7,7 +7,7 @@ const features = [
   {
     icon: Zap,
     title: "High Performance",
-    description: "Built on the Cognis Engine for uncompromising speed and efficiency."
+    description: "Built on the Flynx Engine for uncompromising speed and efficiency."
   },
   {
     icon: Shield,
@@ -50,7 +50,7 @@ const About = () => {
               <span className="text-gradient">DIGITAL ECOSYSTEM.</span>
             </h2>
             <p className="text-lg text-white/40 font-medium max-w-xl leading-relaxed">
-              At Cognis, we don't just build software; we craft experiences. Our mission is to bridge the gap between platforms, 
+              At Flynx, we don't just build software; we craft experiences. Our mission is to bridge the gap between platforms, 
               creating a unified world where your tools work together in perfect harmony.
             </p>
             
@@ -77,7 +77,7 @@ const About = () => {
             <div className="glass-card aspect-square rounded-[4rem] p-4 relative overflow-hidden group">
                <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent group-hover:opacity-40 transition-opacity" />
                <div className="w-full h-full rounded-[3rem] bg-white/5 border border-white/10 flex items-center justify-center relative overflow-hidden">
-                  <span className="text-8xl font-black text-white/5 select-none">COGNIS</span>
+                  <span className="text-8xl font-black text-white/5 select-none">FLYNX</span>
                   <motion.div 
                     animate={{ rotate: 360 }}
                     transition={{ duration: 20, repeat: Infinity, ease: "linear" }}

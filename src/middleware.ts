@@ -18,7 +18,7 @@ export function middleware(request: NextRequest) {
       subdomain = parts[0];
     }
   } 
-  // Vercel handling (e.g., schoolos.cognis-platform.vercel.app)
+  // Vercel handling (e.g., schoolos.flynx-platform.vercel.app)
   else if (hostname.includes('vercel.app')) {
     // If it has 4 or more parts, the first part is a subdomain
     // e.g., app.name.vercel.app -> parts.length is 4
@@ -26,7 +26,7 @@ export function middleware(request: NextRequest) {
       subdomain = parts[0];
     }
   }
-  // Custom Domain handling (e.g., schoolos.cognis.in)
+  // Custom Domain handling (e.g., schoolos.flynx.site)
   else if (parts.length >= 3) {
     subdomain = parts[0];
   }
@@ -45,7 +45,7 @@ export function middleware(request: NextRequest) {
     if (!url.pathname.startsWith('/app-sites') && !url.pathname.startsWith('/_next')) {
       
       // Rewrite the URL to the app-sites dynamic route
-      // e.g. schoolos.cognis.in/download -> /app-sites/schoolos/download
+      // e.g. schoolos.flynx.site/download -> /app-sites/schoolos/download
       const rewriteUrl = new URL(`/app-sites/${subdomain}${url.pathname}`, request.url);
       console.log(`[Middleware] Rewriting ${hostname}${url.pathname} -> ${rewriteUrl.pathname}`);
       return NextResponse.rewrite(rewriteUrl);

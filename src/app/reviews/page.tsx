@@ -2,8 +2,8 @@ import Reviews from "@/components/Reviews";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Reviews | Cognis Platform",
-  description: "See what teams worldwide say about Cognis.",
+  title: "Reviews | Flynx Platform",
+  description: "See what teams worldwide say about Flynx.",
 };
 
 export default function ReviewsPage() {

@@ -62,7 +62,7 @@ export default async function Home() {
               <p className="label" style={{ marginBottom: "0.75rem" }}>Our Ecosystem</p>
               <h2 className="display-md" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
                 Powered by the{" "}
-                <span className="text-gradient">Cognis Engine.</span>
+                <span className="text-gradient">Flynx Engine.</span>
               </h2>
             </div>
             <Link href="/downloads" className="btn-secondary" style={{ flexShrink: 0 }}>
@@ -98,13 +98,13 @@ export default async function Home() {
         <div className="container-xl">
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem", alignItems: "center" }} className="features-grid">
             <div>
-              <p className="label" style={{ marginBottom: "1rem" }}>Why Cognis</p>
+              <p className="label" style={{ marginBottom: "1rem" }}>Why Flynx</p>
               <h2 className="display-md" style={{ fontFamily: "'Space Grotesk', sans-serif", marginBottom: "1.25rem" }}>
                 Architecture built for{" "}
                 <span className="text-gradient">scale.</span>
               </h2>
               <p style={{ fontSize: "1rem", color: "rgba(248,250,252,0.5)", lineHeight: 1.7, marginBottom: "2rem" }}>
-                From single-club deployments to federation-wide platforms, Cognis scales without limits. Every subdomain is a fully branded, independently managed SaaS experience.
+                From single-club deployments to federation-wide platforms, Flynx scales without limits. Every subdomain is a fully branded, independently managed SaaS experience.
               </p>
               <Link href="/about" className="btn-secondary">
                 Learn More <ArrowRight size={14} />
@@ -155,7 +155,7 @@ export default async function Home() {
               <span className="text-gradient">beyond software?</span>
             </h2>
             <p style={{ fontSize: "1rem", color: "rgba(248,250,252,0.5)", marginBottom: "2.5rem", maxWidth: "44ch", margin: "0 auto 2.5rem" }}>
-              Join thousands of sports organizations already running on the Cognis platform.
+              Join thousands of sports organizations already running on the Flynx platform.
             </p>
             <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center", flexWrap: "wrap" }}>
               <Link href="/downloads" className="btn-primary">

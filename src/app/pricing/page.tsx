@@ -2,7 +2,7 @@ import Pricing from "@/components/Pricing";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Pricing | Cognis Platform",
+  title: "Pricing | Flynx Platform",
   description: "Simple, transparent pricing. Choose the plan that fits your workflow.",
 };
 

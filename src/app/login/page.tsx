@@ -56,7 +56,7 @@ export default function LoginPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, ease: [0.16,1,0.3,1] }}
           >
-            <p className="label" style={{ marginBottom: "1.5rem" }}>Cognis Platform</p>
+            <p className="label" style={{ marginBottom: "1.5rem" }}>Flynx Platform</p>
             <h1 style={{
               fontFamily: "'Space Grotesk', sans-serif",
               fontSize: "clamp(2.5rem,5vw,4rem)", fontWeight: 700,
@@ -67,7 +67,7 @@ export default function LoginPage() {
               <span className="text-gradient">ecosystem.</span>
             </h1>
             <p style={{ fontSize: "1rem", color: "rgba(248,250,252,0.45)", lineHeight: 1.7, maxWidth: "38ch" }}>
-              Sign in to access your Cognis dashboard, manage subscriptions, and control your branded SaaS deployments.
+              Sign in to access your Flynx dashboard, manage subscriptions, and control your branded SaaS deployments.
             </p>
           </motion.div>
 
@@ -86,7 +86,7 @@ export default function LoginPage() {
             }}
           >
             <p style={{ fontSize: "0.9rem", color: "rgba(248,250,252,0.6)", lineHeight: 1.7, marginBottom: "0.75rem" }}>
-              "Cognis transformed how we manage our entire academy. The platform just works."
+              "Flynx transformed how we manage our entire academy. The platform just works."
             </p>
             <p style={{ fontSize: "0.75rem", color: "rgba(248,250,252,0.3)", fontWeight: 600 }}>— Alex M., Head Coach, FC Velocity</p>
           </motion.div>

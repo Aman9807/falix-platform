@@ -88,7 +88,7 @@ export default function AdminAppList({ onEdit }: { onEdit: (app: App) => void })
               )}
               <div>
                 <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "1.125rem", fontWeight: 700, letterSpacing: "-0.02em" }}>{app.title}</h3>
-                <p className="label" style={{ marginTop: "0.25rem", color: "#60a5fa" }}>{app.slug}.cognis.in</p>
+                <p className="label" style={{ marginTop: "0.25rem", color: "#60a5fa" }}>{app.slug}.flynx.site</p>
                 <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.6rem" }}>
                   {app.windows_url && <Monitor size={12} style={{ color: "rgba(248,250,252,0.2)" }} />}
                   {app.mac_url     && <Laptop size={12} style={{ color: "rgba(248,250,252,0.2)" }} />}
