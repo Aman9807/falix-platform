@@ -23,12 +23,20 @@ export default function AdminAppList({ onEdit }: { onEdit: (app: App) => void })
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const q = query(collection(db, "apps"), orderBy("created_at", "desc"));
+    const q = query(collection(db, "apps"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const appsData = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       })) as App[];
+      
+      // Sort client-side so apps without created_at still show up
+      appsData.sort((a: any, b: any) => {
+        const timeA = a.created_at?.seconds || 0;
+        const timeB = b.created_at?.seconds || 0;
+        return timeB - timeA;
+      });
+
       setApps(appsData);
       setLoading(false);
     });

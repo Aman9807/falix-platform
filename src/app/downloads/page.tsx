@@ -20,7 +20,12 @@ export default function DownloadsPage() {
 
   useEffect(() => {
     getDocs(collection(db, "apps"))
-      .then(snap => setApps(snap.docs.map(d => ({ id: d.id, ...d.data() }))))
+      .then(snap => {
+        const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        // Sort by created_at desc
+        data.sort((a: any, b: any) => (b.created_at?.seconds || 0) - (a.created_at?.seconds || 0));
+        setApps(data);
+      })
       .finally(() => setLoading(false));
   }, []);
 

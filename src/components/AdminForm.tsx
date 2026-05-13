@@ -4,7 +4,7 @@ import { useState } from "react";
 import { db, storage } from "@/lib/firebase";
 import { collection, addDoc, updateDoc, doc, serverTimestamp } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { Plus, Upload, Check, Monitor, Laptop, Smartphone, Cpu, Save, X } from "lucide-react";
+import { Plus, Upload, Check, Monitor, Laptop, Smartphone, Cpu, Save, X, CreditCard } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const platforms = [
@@ -79,6 +79,7 @@ export default function AdminForm({ editingApp, onCancel }: { editingApp?: any, 
     try {
       let logoUrl = editingApp?.logo_url || "";
       if (logo) {
+        console.log("[Admin] Uploading logo...");
         const storageRef = ref(storage, `logos/${Date.now()}_${logo.name}`);
         await uploadBytes(storageRef, logo);
         logoUrl = await getDownloadURL(storageRef);
@@ -97,10 +98,14 @@ export default function AdminForm({ editingApp, onCancel }: { editingApp?: any, 
         updated_at:  serverTimestamp(),
       };
 
+      console.log("[Admin] Submitting App Data:", appData);
+
       if (editingApp?.id) {
         await updateDoc(doc(db, "apps", editingApp.id), appData);
+        console.log("[Admin] Successfully updated app.");
       } else {
-        await addDoc(collection(db, "apps"), { ...appData, created_at: serverTimestamp() });
+        const docRef = await addDoc(collection(db, "apps"), { ...appData, created_at: serverTimestamp() });
+        console.log("[Admin] Successfully added new app with ID:", docRef.id);
       }
 
       setSuccess(true);
@@ -108,9 +113,9 @@ export default function AdminForm({ editingApp, onCancel }: { editingApp?: any, 
         setSuccess(false);
         if (onCancel) onCancel();
       }, 1500);
-    } catch (error) {
-      console.error(error);
-      alert("Error saving application.");
+    } catch (error: any) {
+      console.error("[Admin] Firebase Error:", error);
+      alert(`Error saving application: ${error.message || "Unknown error"}`);
     } finally {
       setLoading(false);
     }
