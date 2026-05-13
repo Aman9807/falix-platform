@@ -17,6 +17,7 @@ export default function ProfilePage() {
 
   const [isEditing, setIsEditing] = useState(false);
   const [profileName, setProfileName] = useState("User");
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -48,10 +49,20 @@ export default function ProfilePage() {
     router.push("/");
   };
 
-  const toggleEditing = () => {
-    if (isEditing) {
-      // Logic to save changes would go here
-      console.log("Saving profile changes...");
+  const toggleEditing = async () => {
+    if (isEditing && auth.currentUser) {
+      setSaving(true);
+      try {
+        await updateDoc(doc(db, "users", auth.currentUser.uid), {
+          name: profileName,
+          updatedAt: new Date()
+        });
+        console.log("[Profile] Saved successfully.");
+      } catch (err) {
+        console.error("[Profile] Error saving:", err);
+      } finally {
+        setSaving(false);
+      }
     }
     setIsEditing(!isEditing);
   };
@@ -208,15 +219,17 @@ export default function ProfilePage() {
 
                   <button 
                     onClick={toggleEditing}
+                    disabled={saving}
                     className="btn-secondary" 
                     style={{ 
                       width: "100%", marginTop: "2rem", justifyContent: "center", height: "3.5rem",
                       background: isEditing ? "rgba(37,99,235,0.1)" : "rgba(255,255,255,0.05)",
-                      borderColor: isEditing ? "#2563EB" : "rgba(255,255,255,0.1)"
+                      borderColor: isEditing ? "#2563EB" : "rgba(255,255,255,0.1)",
+                      opacity: saving ? 0.6 : 1
                     }}
                   >
-                    <Settings size={18} className={isEditing ? "animate-spin" : ""} />
-                    {isEditing ? "Save Changes" : "Account Settings"}
+                    <Settings size={18} className={isEditing || saving ? "animate-spin" : ""} />
+                    {saving ? "Synchronizing..." : isEditing ? "Save Changes" : "Account Settings"}
                   </button>
                 </div>
               </SectionReveal>

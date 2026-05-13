@@ -85,6 +85,12 @@ export default function AdminForm({ editingApp, onCancel }: { editingApp?: any, 
         logoUrl = await getDownloadURL(storageRef);
       }
 
+      // Sanitize plans: remove empty features
+      const sanitizedPlans = plans.map(p => ({
+        ...p,
+        features: p.features.filter((f: string) => f.trim() !== "")
+      }));
+
       const appData = {
         title,
         slug: slug.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""),
@@ -94,7 +100,7 @@ export default function AdminForm({ editingApp, onCancel }: { editingApp?: any, 
         mac_url:     platformLinks.mac || null,
         linux_url:   platformLinks.linux || null,
         android_url: platformLinks.android || null,
-        plans,
+        plans: sanitizedPlans,
         updated_at:  serverTimestamp(),
       };
 
