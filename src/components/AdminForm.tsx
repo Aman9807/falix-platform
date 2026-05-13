@@ -92,9 +92,9 @@ export default function AdminForm({ editingApp, onCancel }: { editingApp?: any, 
       }));
 
       const appData = {
-        title,
-        slug: slug.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""),
-        description,
+        title: title.trim(),
+        slug: slug.trim().toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""),
+        description: description.trim(),
         logo_url: logoUrl,
         windows_url: platformLinks.windows || null,
         mac_url:     platformLinks.mac || null,

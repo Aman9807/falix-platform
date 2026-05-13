@@ -37,7 +37,11 @@ export default function AdminAppList({ onEdit }: { onEdit: (app: App) => void })
         return timeB - timeA;
       });
 
+      console.log(`[Admin] Found ${appsData.length} apps in database.`);
       setApps(appsData);
+      setLoading(false);
+    }, (error) => {
+      console.error("[Admin] Firestore Read Error:", error);
       setLoading(false);
     });
     return () => unsubscribe();
@@ -75,7 +79,13 @@ export default function AdminAppList({ onEdit }: { onEdit: (app: App) => void })
             style={{ padding: "1.25rem", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1.5rem", flexWrap: "wrap" }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
-              <img src={app.logo_url} alt={app.title} style={{ width: 56, height: 56, borderRadius: "1rem", objectFit: "cover", border: "1px solid rgba(255,255,255,0.08)" }} />
+              {app.logo_url ? (
+                <img src={app.logo_url} alt={app.title} style={{ width: 56, height: 56, borderRadius: "1rem", objectFit: "cover", border: "1px solid rgba(255,255,255,0.08)" }} />
+              ) : (
+                <div style={{ width: 56, height: 56, borderRadius: "1rem", background: "linear-gradient(135deg, #2563EB, #7C3AED)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.25rem", fontWeight: 700, color: "#fff" }}>
+                  {app.title?.[0]?.toUpperCase() || "?"}
+                </div>
+              )}
               <div>
                 <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "1.125rem", fontWeight: 700, letterSpacing: "-0.02em" }}>{app.title}</h3>
                 <p className="label" style={{ marginTop: "0.25rem", color: "#60a5fa" }}>{app.slug}.falix.in</p>

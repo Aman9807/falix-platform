@@ -84,8 +84,14 @@ export default function DownloadsPage() {
               >
                 {/* Top */}
                 <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
-                  <img src={app.logo_url} alt={app.title}
-                    style={{ width: 52, height: 52, borderRadius: "0.875rem", objectFit: "cover", border: "1px solid rgba(255,255,255,0.08)" }} />
+                  {app.logo_url ? (
+                    <img src={app.logo_url} alt={app.title}
+                      style={{ width: 52, height: 52, borderRadius: "0.875rem", objectFit: "cover", border: "1px solid rgba(255,255,255,0.08)" }} />
+                  ) : (
+                    <div style={{ width: 52, height: 52, borderRadius: "0.875rem", background: "linear-gradient(135deg, #2563EB, #7C3AED)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.125rem", fontWeight: 700, color: "#fff" }}>
+                      {app.title?.[0]?.toUpperCase() || "?"}
+                    </div>
+                  )}
                   <Link href={`/app-sites/${app.slug}`}
                     style={{ color: "rgba(248,250,252,0.3)", display: "flex", alignItems: "center", gap: "0.25rem", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none" }}
                     onMouseEnter={e => (e.currentTarget.style.color = "#F8FAFC")}
