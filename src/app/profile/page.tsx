@@ -15,13 +15,18 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
+  const [isEditing, setIsEditing] = useState(false);
+  const [profileName, setProfileName] = useState("User");
+
   useEffect(() => {
     const fetchUserData = async () => {
       if (auth.currentUser) {
         try {
           const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
           if (userDoc.exists()) {
-            setUserData(userDoc.data());
+            const data = userDoc.data();
+            setUserData(data);
+            if (data.name) setProfileName(data.name);
           } else {
             setUserData({
               plan: "Free Tier",
@@ -41,6 +46,14 @@ export default function ProfilePage() {
   const handleLogout = async () => {
     await signOut(auth);
     router.push("/");
+  };
+
+  const toggleEditing = () => {
+    if (isEditing) {
+      // Logic to save changes would go here
+      console.log("Saving profile changes...");
+    }
+    setIsEditing(!isEditing);
   };
 
   return (
@@ -64,7 +77,7 @@ export default function ProfilePage() {
                 <div>
                   <p className="label" style={{ marginBottom: "0.5rem" }}>Account Dashboard</p>
                   <h1 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "2.5rem", fontWeight: 700, letterSpacing: "-0.03em" }}>
-                    Welcome back, <span className="text-gradient">User.</span>
+                    Welcome back, <span className="text-gradient">{profileName}.</span>
                   </h1>
                 </div>
               </div>
@@ -99,21 +112,37 @@ export default function ProfilePage() {
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2.5rem" }} className="info-grid">
                     <div style={{ minWidth: 0 }}>
                       <p className="label" style={{ marginBottom: "0.5rem" }}>Email Address</p>
-                      <div style={{ 
-                        display: "flex", alignItems: "center", gap: "0.625rem", 
-                        color: "rgba(248,250,252,0.8)", fontSize: "0.9375rem", fontWeight: 500,
-                        overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"
-                      }}>
-                        <Mail size={16} style={{ opacity: 0.3, flexShrink: 0 }} />
-                        {auth.currentUser?.email}
-                      </div>
+                      {isEditing ? (
+                        <input 
+                          value={auth.currentUser?.email || ""} 
+                          disabled 
+                          style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "0.5rem", padding: "0.5rem", color: "rgba(255,255,255,0.5)", width: "100%" }}
+                        />
+                      ) : (
+                        <div style={{ 
+                          display: "flex", alignItems: "center", gap: "0.625rem", 
+                          color: "rgba(248,250,252,0.8)", fontSize: "0.9375rem", fontWeight: 500,
+                          overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"
+                        }}>
+                          <Mail size={16} style={{ opacity: 0.3, flexShrink: 0 }} />
+                          {auth.currentUser?.email}
+                        </div>
+                      )}
                     </div>
                     <div>
-                      <p className="label" style={{ marginBottom: "0.5rem" }}>Member Since</p>
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.625rem", color: "rgba(248,250,252,0.8)", fontSize: "0.9375rem", fontWeight: 500 }}>
-                        <Calendar size={16} style={{ opacity: 0.3 }} />
-                        {userData?.joinedDate || "May 2026"}
-                      </div>
+                      <p className="label" style={{ marginBottom: "0.5rem" }}>Display Name</p>
+                      {isEditing ? (
+                        <input 
+                          value={profileName} 
+                          onChange={(e) => setProfileName(e.target.value)}
+                          style={{ background: "rgba(255,255,255,0.05)", border: "1px solid #2563EB", borderRadius: "0.5rem", padding: "0.5rem", color: "#fff", width: "100%", outline: "none" }}
+                        />
+                      ) : (
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.625rem", color: "rgba(248,250,252,0.8)", fontSize: "0.9375rem", fontWeight: 500 }}>
+                          <User size={16} style={{ opacity: 0.3 }} />
+                          {profileName}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -141,7 +170,11 @@ export default function ProfilePage() {
                       <h4 style={{ fontSize: "1.5rem", fontWeight: 800, fontFamily: "'Space Grotesk', sans-serif" }}>{userData?.plan || "Starter Plan"}</h4>
                       <p style={{ fontSize: "0.875rem", color: "rgba(248,250,252,0.4)", marginTop: "0.4rem" }}>Next billing cycle: June 12, 2026</p>
                     </div>
-                    <button className="btn-primary" style={{ padding: "0.75rem 1.5rem", fontSize: "0.8125rem" }}>
+                    <button 
+                      onClick={() => router.push("/#pricing")}
+                      className="btn-primary" 
+                      style={{ padding: "0.75rem 1.5rem", fontSize: "0.8125rem" }}
+                    >
                       Upgrade Plan
                     </button>
                   </div>
@@ -173,9 +206,17 @@ export default function ProfilePage() {
                     ))}
                   </div>
 
-                  <button className="btn-secondary" style={{ width: "100%", marginTop: "2rem", justifyContent: "center", height: "3.5rem" }}>
-                    <Settings size={18} />
-                    Account Settings
+                  <button 
+                    onClick={toggleEditing}
+                    className="btn-secondary" 
+                    style={{ 
+                      width: "100%", marginTop: "2rem", justifyContent: "center", height: "3.5rem",
+                      background: isEditing ? "rgba(37,99,235,0.1)" : "rgba(255,255,255,0.05)",
+                      borderColor: isEditing ? "#2563EB" : "rgba(255,255,255,0.1)"
+                    }}
+                  >
+                    <Settings size={18} className={isEditing ? "animate-spin" : ""} />
+                    {isEditing ? "Save Changes" : "Account Settings"}
                   </button>
                 </div>
               </SectionReveal>

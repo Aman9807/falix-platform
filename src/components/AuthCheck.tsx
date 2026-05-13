@@ -34,16 +34,17 @@ export default function AuthCheck({ children, requireAdmin = false }: Props) {
         const isUserAdmin = lowerCaseAdminEmails.includes(userEmail);
         setIsAdmin(isUserAdmin);
 
-        // If this page requires admin but the user isn't one, kick them out
+        // If this page requires admin but the user isn't one, show error instead of silent redirect
         if (requireAdmin && !isUserAdmin) {
           console.warn("[Security] Unauthorized admin access attempt by:", userEmail);
-          // Redirecting to landing page as they aren't authorized for admin
-          router.push("/");
+          setLoading(false); // Stop loading to show the "unauthorized" state below
+        } else {
+          setLoading(false);
         }
       } else {
         router.push("/login");
+        setLoading(false);
       }
-      setLoading(false);
     });
 
     return () => unsubscribe();
@@ -60,7 +61,25 @@ export default function AuthCheck({ children, requireAdmin = false }: Props) {
 
   // Final validation before rendering
   if (!user) return null;
-  if (requireAdmin && !isAdmin) return null;
+  
+  if (requireAdmin && !isAdmin) {
+    return (
+      <div style={{ 
+        minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", 
+        background: "#050508", color: "#fff", padding: "2rem", textAlign: "center" 
+      }}>
+        <div style={{ padding: "2rem", background: "rgba(248,113,113,0.05)", border: "1px solid rgba(248,113,113,0.1)", borderRadius: "1.5rem", maxWidth: "400px" }}>
+          <h2 style={{ color: "#f87171", marginBottom: "1rem", fontFamily: "'Space Grotesk', sans-serif" }}>Access Denied</h2>
+          <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.9rem", marginBottom: "1.5rem" }}>
+            Your account <strong>{user.email || " (No Email)"}</strong> is not authorized to access the Admin Dashboard.
+          </p>
+          <button onClick={() => router.push("/")} className="btn-secondary" style={{ width: "100%" }}>
+            Return to Home
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return <>{children}</>;
 }

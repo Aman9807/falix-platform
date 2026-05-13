@@ -34,6 +34,9 @@ export default function AdminForm({ editingApp, onCancel }: { editingApp?: any, 
     linux:   editingApp?.linux_url || "",
     android: editingApp?.android_url || "",
   });
+  const [plans, setPlans] = useState<any[]>(editingApp?.plans || [
+    { name: "Starter", price: "0", features: ["Basic Support", "Limited Storage"] }
+  ]);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -42,6 +45,32 @@ export default function AdminForm({ editingApp, onCancel }: { editingApp?: any, 
       setLogo(e.target.files[0]);
       setLogoPreview(URL.createObjectURL(e.target.files[0]));
     }
+  };
+
+  const addPlan = () => setPlans([...plans, { name: "", price: "", features: [""] }]);
+  const removePlan = (idx: number) => setPlans(plans.filter((_, i) => i !== idx));
+  const updatePlan = (idx: number, field: string, val: any) => {
+    const newPlans = [...plans];
+    newPlans[idx][field] = val;
+    setPlans(newPlans);
+  };
+
+  const addFeature = (planIdx: number) => {
+    const newPlans = [...plans];
+    newPlans[planIdx].features.push("");
+    setPlans(newPlans);
+  };
+
+  const updateFeature = (planIdx: number, featureIdx: number, val: string) => {
+    const newPlans = [...plans];
+    newPlans[planIdx].features[featureIdx] = val;
+    setPlans(newPlans);
+  };
+
+  const removeFeature = (planIdx: number, featureIdx: number) => {
+    const newPlans = [...plans];
+    newPlans[planIdx].features = newPlans[planIdx].features.filter((_: any, i: number) => i !== featureIdx);
+    setPlans(newPlans);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -64,6 +93,7 @@ export default function AdminForm({ editingApp, onCancel }: { editingApp?: any, 
         mac_url:     platformLinks.mac || null,
         linux_url:   platformLinks.linux || null,
         android_url: platformLinks.android || null,
+        plans,
         updated_at:  serverTimestamp(),
       };
 
@@ -194,6 +224,51 @@ export default function AdminForm({ editingApp, onCancel }: { editingApp?: any, 
             </motion.div>
           )}
         </AnimatePresence>
+      </div>
+
+      {/* ── Pricing Plans ── */}
+      <div className="glass-card" style={{ padding: "2rem", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "1.25rem", fontWeight: 700, display: "flex", alignItems: "center", gap: "0.75rem" }}>
+            <CreditCard size={20} style={{ color: "#60a5fa" }} />
+            Subscription Plans
+          </h3>
+          <button type="button" onClick={addPlan} className="btn-secondary" style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}>
+            <Plus size={14} /> Add Plan
+          </button>
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+          {plans.map((plan, pIdx) => (
+            <motion.div key={pIdx} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} style={{ padding: "1.5rem", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: "1.25rem", position: "relative" }}>
+              <button type="button" onClick={() => removePlan(pIdx)} style={{ position: "absolute", top: "1rem", right: "1rem", background: "none", border: "none", color: "rgba(248,113,113,0.5)", cursor: "pointer" }}><X size={16} /></button>
+              
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 120px", gap: "1rem", marginBottom: "1rem" }}>
+                <div>
+                  <p className="label" style={{ marginBottom: "0.4rem", fontSize: "0.65rem" }}>Plan Name</p>
+                  <input style={inputStyle} value={plan.name} placeholder="Starter" onChange={(e) => updatePlan(pIdx, "name", e.target.value)} />
+                </div>
+                <div>
+                  <p className="label" style={{ marginBottom: "0.4rem", fontSize: "0.65rem" }}>Price ($)</p>
+                  <input style={inputStyle} value={plan.price} placeholder="0" onChange={(e) => updatePlan(pIdx, "price", e.target.value)} />
+                </div>
+              </div>
+
+              <div>
+                <p className="label" style={{ marginBottom: "0.75rem", fontSize: "0.65rem" }}>Features</p>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                  {plan.features.map((feat: string, fIdx: number) => (
+                    <div key={fIdx} style={{ display: "flex", gap: "0.5rem" }}>
+                      <input style={{ ...inputStyle, padding: "0.6rem 1rem" }} value={feat} placeholder="Feature detail..." onChange={(e) => updateFeature(pIdx, fIdx, e.target.value)} />
+                      <button type="button" onClick={() => removeFeature(pIdx, fIdx)} style={{ padding: "0.5rem", background: "rgba(248,113,113,0.05)", border: "1px solid rgba(248,113,113,0.1)", borderRadius: "0.75rem", color: "#f87171" }}><X size={14} /></button>
+                    </div>
+                  ))}
+                  <button type="button" onClick={() => addFeature(pIdx)} style={{ alignSelf: "flex-start", marginTop: "0.5rem", fontSize: "0.7rem", color: "#60a5fa", background: "none", border: "none", cursor: "pointer", fontWeight: 600 }}>+ Add Feature</button>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
       </div>
 
       {/* ── Actions ── */}

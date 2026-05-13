@@ -119,7 +119,16 @@ export default async function AppSubdomainPage({ params }: { params: { subdomain
       </SectionReveal>
 
       <SectionReveal className="w-full py-48 px-6 bg-white/[0.01]">
-         <Pricing />
+         <div className="max-content text-center">
+            <h2 className="text-4xl md:text-6xl font-black mb-8 uppercase tracking-tighter">Choose Your Plan</h2>
+            <p className="text-white/40 mb-12 max-w-xl mx-auto uppercase tracking-widest font-bold">Transparent pricing for every stage of your growth.</p>
+            <Link 
+                href={`/plan`}
+                className="inline-flex px-12 py-6 rounded-2xl border border-white/10 hover:border-white/40 transition-colors uppercase tracking-widest font-black text-xs"
+            >
+                View Detailed Plans
+            </Link>
+         </div>
       </SectionReveal>
 
       {/* CTA Section */}
