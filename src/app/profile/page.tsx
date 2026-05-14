@@ -3,7 +3,7 @@
 import AuthCheck from "@/components/AuthCheck";
 import SectionReveal from "@/components/SectionReveal";
 import { auth, db } from "@/lib/firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { User, CreditCard, ShieldCheck, Zap, LogOut, Settings, Calendar, Mail } from "lucide-react";
