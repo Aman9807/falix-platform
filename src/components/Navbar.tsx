@@ -53,7 +53,7 @@ export default function Navbar() {
         <nav
           className="pointer-events-auto w-full"
           style={{
-            maxWidth: scrolled ? 820 : 1300,
+            maxWidth: scrolled ? 1000 : 1300,
             margin: "0 auto",
             padding: "1.25rem 1.5rem 0",
             transition: "max-width 0.4s cubic-bezier(0.16,1,0.3,1)",
