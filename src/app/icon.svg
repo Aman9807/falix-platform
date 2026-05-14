@@ -1,0 +1,17 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="blueGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2563EB" />
+      <stop offset="100%" stop-color="#60A5FA" />
+    </linearGradient>
+    <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7C3AED" />
+      <stop offset="100%" stop-color="#A78BFA" />
+    </linearGradient>
+  </defs>
+  <g transform="translate(15, 0)">
+    <polygon points="100,412 180,100 260,100 180,412" fill="url(#blueGrad)" />
+    <polygon points="268,100 448,100 408,180 248,180" fill="url(#purpleGrad)" />
+    <polygon points="232,240 368,240 328,320 212,320" fill="url(#purpleGrad)" />
+  </g>
+</svg>
