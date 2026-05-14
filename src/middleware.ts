@@ -12,42 +12,36 @@ export function middleware(request: NextRequest) {
   const parts = hostname.split('.');
   let subdomain = '';
 
-  // Localhost handling (e.g., schoolos.localhost:3000)
+  // Handle different environments
   if (hostname.includes('localhost')) {
     if (parts.length >= 2 && !parts[0].includes('localhost')) {
       subdomain = parts[0];
     }
-  } 
-  // Vercel handling (e.g., schoolos.flynx-platform.vercel.app)
-  else if (hostname.includes('vercel.app')) {
-    // If it has 4 or more parts, the first part is a subdomain
-    // e.g., app.name.vercel.app -> parts.length is 4
-    if (parts.length >= 4) {
+  } else if (hostname.includes('vercel.app')) {
+    if (parts.length >= 4) subdomain = parts[0];
+  } else {
+    // Custom Domain (e.g., admin.flynx.site)
+    // If we have admin.flynx.site, parts.length is 3
+    if (parts.length >= 3) {
       subdomain = parts[0];
     }
   }
-  // Custom Domain handling (e.g., schoolos.flynx.site)
-  else if (parts.length >= 3) {
-    subdomain = parts[0];
-  }
+
+  const sub = subdomain.toLowerCase();
+  console.log(`[Middleware] Host: ${hostname}, Subdomain: ${sub || '(none)'}, Path: ${url.pathname}`);
 
   // 3. Special Subdomain Rewrites
-  if (subdomain.toLowerCase() === 'admin') {
+  if (sub === 'admin') {
     const rewriteUrl = new URL(`/admin${url.pathname === '/' ? '' : url.pathname}`, request.url);
+    console.log(`[Middleware] Admin Routing -> ${rewriteUrl.pathname}`);
     return NextResponse.rewrite(rewriteUrl);
   }
 
-  // 4. Traffic Redirection
-  // If we found a subdomain AND it's not a reserved keyword
-  if (subdomain && !reservedSubdomains.includes(subdomain.toLowerCase())) {
-    
-    // Avoid infinite loops if we are already in the internal path
+  // 4. Traffic Redirection for dynamic app sites
+  if (sub && !reservedSubdomains.includes(sub)) {
     if (!url.pathname.startsWith('/app-sites') && !url.pathname.startsWith('/_next')) {
-      
-      // Rewrite the URL to the app-sites dynamic route
-      // e.g. schoolos.flynx.site/download -> /app-sites/schoolos/download
-      const rewriteUrl = new URL(`/app-sites/${subdomain}${url.pathname}`, request.url);
-      console.log(`[Middleware] Rewriting ${hostname}${url.pathname} -> ${rewriteUrl.pathname}`);
+      const rewriteUrl = new URL(`/app-sites/${sub}${url.pathname}`, request.url);
+      console.log(`[Middleware] App-Site Routing -> ${rewriteUrl.pathname}`);
       return NextResponse.rewrite(rewriteUrl);
     }
   }
