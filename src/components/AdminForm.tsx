@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { db, storage } from "@/lib/firebase";
+import { db } from "@/lib/firebase";
 import { collection, addDoc, updateDoc, doc, serverTimestamp } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { Plus, Upload, Check, Monitor, Laptop, Smartphone, Cpu, Save, X, CreditCard, Globe } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -45,8 +44,17 @@ export default function AdminForm({ editingApp, onCancel }: { editingApp?: any, 
 
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) {
-      setLogo(e.target.files[0]);
-      setLogoPreview(URL.createObjectURL(e.target.files[0]));
+      const file = e.target.files[0];
+      if (file.size > 800 * 1024) {
+        alert("Logo artwork size must be less than 800KB. Please compress the image or use a smaller PNG/SVG.");
+        return;
+      }
+      setLogo(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -81,11 +89,9 @@ export default function AdminForm({ editingApp, onCancel }: { editingApp?: any, 
     setLoading(true);
     try {
       let logoUrl = editingApp?.logo_url || "";
-      if (logo) {
-        console.log("[Admin] Uploading logo...");
-        const storageRef = ref(storage, `logos/${Date.now()}_${logo.name}`);
-        await uploadBytes(storageRef, logo);
-        logoUrl = await getDownloadURL(storageRef);
+      if (logo && logoPreview) {
+        console.log("[Admin] Storing logo as Base64 in Firestore...");
+        logoUrl = logoPreview;
       }
 
       // Sanitize plans: remove empty features
