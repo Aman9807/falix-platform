@@ -2,7 +2,7 @@ import { db } from "@/lib/firebase";
 import { collection, query, where, getDocs, limit } from "firebase/firestore";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
-import { Monitor, Laptop, Cpu, Smartphone, ArrowLeft, Download, ChevronRight } from "lucide-react";
+import { Monitor, Laptop, Cpu, Smartphone, ArrowLeft, Download, ChevronRight, Globe, ExternalLink } from "lucide-react";
 
 async function getAppData(slug: string) {
   const appsRef = collection(db, "apps");
@@ -28,6 +28,7 @@ export default async function DownloadPage({ params }: { params: { subdomain: st
     { id: "mac", name: "macOS", icon: Laptop, url: appData.mac_url },
     { id: "linux", name: "Linux", icon: Cpu, url: appData.linux_url },
     { id: "android", name: "Android", icon: Smartphone, url: appData.android_url },
+    { id: "website", name: "Website / Web App", icon: Globe, url: appData.website_url },
   ];
 
   const availablePlatforms = platforms.filter(p => p.url);
@@ -54,11 +55,11 @@ export default async function DownloadPage({ params }: { params: { subdomain: st
               />
               <div className="text-center md:text-left">
                   <h1 className="text-4xl md:text-6xl font-black tracking-tighter uppercase mb-4">
-                    Download <span className="text-gradient">{appData.title}</span>
+                    {appData.website_url && !appData.windows_url && !appData.mac_url ? "Get Started with" : "Download"} <span className="text-gradient">{appData.title}</span>
                   </h1>
                   <p className="text-white/40 font-medium max-w-lg">
-                    Select your platform below to get the latest version of {appData.title}. 
-                    All downloads are verified and secure.
+                    Select your preferred platform below to access {appData.title}. 
+                    All links are verified and secure.
                   </p>
               </div>
           </div>
@@ -83,7 +84,7 @@ export default async function DownloadPage({ params }: { params: { subdomain: st
                     </div>
                   </div>
                   <div className="w-12 h-12 rounded-full border border-white/5 flex items-center justify-center group-hover:bg-blue-600 group-hover:border-blue-600 group-hover:text-white transition-all">
-                    <Download size={18} />
+                    {platform.id === "website" ? <ExternalLink size={18} /> : <Download size={18} />}
                   </div>
                 </a>
               ))

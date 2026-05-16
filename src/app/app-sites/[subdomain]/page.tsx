@@ -1,7 +1,7 @@
 import { db } from "@/lib/firebase";
 import { collection, query, where, getDocs, limit } from "firebase/firestore";
 import Link from "next/link";
-import { ArrowRight, Download, Monitor, Laptop, Cpu, Smartphone } from "lucide-react";
+import { ArrowRight, Download, Monitor, Laptop, Cpu, Smartphone, Globe } from "lucide-react";
 import SectionReveal from "@/components/SectionReveal";
 import Pricing from "@/components/Pricing";
 
@@ -65,8 +65,8 @@ export default async function AppSubdomainPage({ params }: { params: { subdomain
                 style={{ backgroundColor: appData.themeColor || "#3b82f6" }}
                 className="hover:opacity-90 text-white px-12 py-6 rounded-[2rem] font-black text-sm uppercase tracking-widest transition-all shadow-2xl flex items-center gap-4 group"
               >
-                <Download size={24} />
-                Get Started Now
+                {appData.website_url && !appData.windows_url ? <Globe size={24} /> : <Download size={24} />}
+                {appData.website_url && !appData.windows_url ? "Launch Website" : "Get Started Now"}
                 <ArrowRight size={22} className="group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
@@ -144,7 +144,7 @@ export default async function AppSubdomainPage({ params }: { params: { subdomain
                     style={{ backgroundColor: appData.themeColor || "#fff", color: appData.themeColor ? "#fff" : "#000" }}
                     className="inline-flex px-16 py-8 rounded-full font-black text-sm uppercase tracking-widest hover:scale-105 transition-transform shadow-2xl"
                 >
-                    Download {appData.title}
+                    {appData.website_url && !appData.windows_url ? `Open ${appData.title}` : `Download ${appData.title}`}
                 </Link>
             </div>
         </div>
