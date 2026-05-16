@@ -4,7 +4,7 @@ import { useState } from "react";
 import { db, storage } from "@/lib/firebase";
 import { collection, addDoc, updateDoc, doc, serverTimestamp } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { Plus, Upload, Check, Monitor, Laptop, Smartphone, Cpu, Save, X, CreditCard } from "lucide-react";
+import { Plus, Upload, Check, Monitor, Laptop, Smartphone, Cpu, Save, X, CreditCard, Globe } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const platforms = [
@@ -12,6 +12,7 @@ const platforms = [
   { id: "mac",     name: "macOS",   icon: Laptop },
   { id: "linux",   name: "Linux",   icon: Cpu },
   { id: "android", name: "Android", icon: Smartphone },
+  { id: "website", name: "Website", icon: Globe },
 ];
 
 export default function AdminForm({ editingApp, onCancel }: { editingApp?: any, onCancel?: () => void }) {
@@ -26,6 +27,7 @@ export default function AdminForm({ editingApp, onCancel }: { editingApp?: any, 
     if (editingApp?.mac_url)     p.push("mac");
     if (editingApp?.linux_url)   p.push("linux");
     if (editingApp?.android_url) p.push("android");
+    if (editingApp?.website_url) p.push("website");
     return p;
   });
   const [platformLinks, setPlatformLinks] = useState<Record<string, string>>({
@@ -33,6 +35,7 @@ export default function AdminForm({ editingApp, onCancel }: { editingApp?: any, 
     mac:     editingApp?.mac_url || "",
     linux:   editingApp?.linux_url || "",
     android: editingApp?.android_url || "",
+    website: editingApp?.website_url || "",
   });
   const [plans, setPlans] = useState<any[]>(editingApp?.plans || [
     { name: "Starter", price: "0", features: ["Basic Support", "Limited Storage"] }
@@ -100,6 +103,7 @@ export default function AdminForm({ editingApp, onCancel }: { editingApp?: any, 
         mac_url:     platformLinks.mac || null,
         linux_url:   platformLinks.linux || null,
         android_url: platformLinks.android || null,
+        website_url: platformLinks.website || null,
         plans: sanitizedPlans,
         updated_at:  serverTimestamp(),
       };
@@ -200,7 +204,7 @@ export default function AdminForm({ editingApp, onCancel }: { editingApp?: any, 
           Platform Distribution
         </h3>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "0.75rem" }} className="platforms-grid">
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "0.75rem" }} className="platforms-grid">
           {platforms.map(({ id, name, icon: Icon }) => {
             const isSelected = selectedPlatforms.includes(id);
             return (
