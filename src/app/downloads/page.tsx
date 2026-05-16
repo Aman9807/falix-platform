@@ -92,7 +92,9 @@ export default function DownloadsPage() {
                       {app.title?.[0]?.toUpperCase() || "?"}
                     </div>
                   )}
-                  <Link href={`/app-sites/${app.slug}`}
+                  <Link href={app.website_url || `/app-sites/${app.slug}`}
+                    target={app.website_url ? "_blank" : "_self"}
+                    rel={app.website_url ? "noopener noreferrer" : ""}
                     style={{ color: "rgba(248,250,252,0.3)", display: "flex", alignItems: "center", gap: "0.25rem", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none" }}
                     onMouseEnter={e => (e.currentTarget.style.color = "#F8FAFC")}
                     onMouseLeave={e => (e.currentTarget.style.color = "rgba(248,250,252,0.3)")}
