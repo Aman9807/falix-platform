@@ -4,7 +4,7 @@ import { db } from "@/lib/firebase";
 import { collection, getDocs } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Monitor, Smartphone, Cpu, Laptop, ExternalLink, LayoutGrid } from "lucide-react";
+import { Monitor, Smartphone, Cpu, Laptop, ExternalLink, LayoutGrid, Globe, Info } from "lucide-react";
 import Link from "next/link";
 
 const PLATFORM_MAP = [
@@ -12,6 +12,7 @@ const PLATFORM_MAP = [
   { key: "mac_url",     Icon: Laptop,     label: "macOS"   },
   { key: "linux_url",   Icon: Cpu,        label: "Linux"   },
   { key: "android_url", Icon: Smartphone, label: "Android" },
+  { key: "website_url", Icon: Globe,      label: "Website" },
 ];
 
 export default function DownloadsPage() {
@@ -105,22 +106,28 @@ export default function DownloadsPage() {
 
                 {/* Info */}
                 <div>
-                  <h3 style={{ fontFamily: "'Space Grotesk',sans-serif", fontWeight: 700, fontSize: "1rem", letterSpacing: "-0.02em", marginBottom: "0.4rem" }}>
-                    {app.title}
-                  </h3>
-                  <p style={{ fontSize: "0.8rem", color: "rgba(248,250,252,0.4)", lineHeight: 1.6, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
+                    <h3 style={{ fontFamily: "'Space Grotesk',sans-serif", fontWeight: 700, fontSize: "1rem", letterSpacing: "-0.02em" }}>
+                      {app.title}
+                    </h3>
+                    <Link href={`https://${app.slug}.flynx.site/about`} target="_blank" style={{ display: "flex", alignItems: "center", gap: "0.25rem", fontSize: "0.7rem", color: "rgba(248,250,252,0.4)", textDecoration: "none" }} onMouseEnter={e => (e.currentTarget.style.color = "#F8FAFC")} onMouseLeave={e => (e.currentTarget.style.color = "rgba(248,250,252,0.4)")}>
+                      <Info size={12} /> About
+                    </Link>
+                  </div>
+                  <p title={app.description} style={{ fontSize: "0.8rem", color: "rgba(248,250,252,0.4)", lineHeight: 1.6, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", cursor: "help" }}>
                     {app.description}
                   </p>
                 </div>
 
                 {/* Download buttons */}
                 <div style={{ marginTop: "auto", paddingTop: "1rem", borderTop: "1px solid rgba(255,255,255,0.06)", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                  <p className="label" style={{ marginBottom: "0.5rem" }}>Download for</p>
+                  <p className="label" style={{ marginBottom: "0.5rem" }}>Available for</p>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
                     {PLATFORM_MAP.filter(p => app[p.key]).map(({ key, Icon, label }) => (
                       <Link
                         key={key}
                         href={app[key]}
+                        target={key === "website_url" ? "_blank" : "_self"}
                         style={{
                           display: "flex", alignItems: "center", gap: "0.4rem",
                           padding: "0.55rem 0.75rem",

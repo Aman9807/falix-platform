@@ -18,10 +18,13 @@ const PLATFORMS = [
 
 async function getApps() {
   try {
-    const q = query(collection(db, "apps"), orderBy("created_at", "desc"));
-    const snap = await getDocs(q);
-    return snap.docs.map(d => ({ id: d.id, ...d.data() })) as any[];
-  } catch { return []; }
+    const snap = await getDocs(collection(db, "apps"));
+    const data = snap.docs.map(d => ({ id: d.id, ...d.data() })) as any[];
+    return data.sort((a, b) => (b.created_at?.seconds || 0) - (a.created_at?.seconds || 0));
+  } catch (error) { 
+    console.error("Error fetching apps:", error);
+    return []; 
+  }
 }
 
 export default async function Home() {
