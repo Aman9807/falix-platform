@@ -14,33 +14,21 @@ interface AppCardProps {
   website_url?: string;
 }
 
-function getAppUrl(slug: string): string {
-  if (typeof window === "undefined") return `/app-sites/${slug}/about`;
-  const isLocalhost =
-    window.location.hostname === "localhost" ||
-    window.location.hostname === "127.0.0.1";
-  if (isLocalhost) {
-    return `http://localhost:3000/app-sites/${slug}/about`;
-  }
-  // Always use the actual subdomain — strip www if present
-  return `https://${slug}.flynx.site/about`;
-}
-
 export default function AppCard({
   title, description, logo_url, slug,
   windows_url, linux_url, android_url, website_url,
 }: AppCardProps) {
   const isWebsiteOnly = !!website_url && !windows_url && !linux_url && !android_url;
 
-  function handleClick(e: React.MouseEvent<HTMLAnchorElement>) {
-    e.preventDefault();
-    window.location.href = getAppUrl(slug);
-  }
+  // Use the stored website_url directly if available (e.g. https://reelfetch.flynx.site)
+  // Otherwise fall back to the Flynx about page for the subdomain
+  const exploreUrl = website_url || `https://${slug}.flynx.site`;
 
   return (
     <a
-      href={getAppUrl(slug)}
-      onClick={handleClick}
+      href={exploreUrl}
+      target="_blank"
+      rel="noopener noreferrer"
       style={{ textDecoration: "none", display: "block" }}
     >
       <div
@@ -63,10 +51,10 @@ export default function AppCard({
               {title}
             </h3>
             <div style={{ display: "flex", gap: "0.3rem", marginTop: "0.3rem" }}>
-              {windows_url && <Monitor size={11} style={{ color: "rgba(248,250,252,0.25)" }} />}
-              {linux_url   && <Cpu     size={11} style={{ color: "rgba(248,250,252,0.25)" }} />}
+              {windows_url && <Monitor   size={11} style={{ color: "rgba(248,250,252,0.25)" }} />}
+              {linux_url   && <Cpu       size={11} style={{ color: "rgba(248,250,252,0.25)" }} />}
               {android_url && <Smartphone size={11} style={{ color: "rgba(248,250,252,0.25)" }} />}
-              {website_url && <Globe   size={11} style={{ color: "rgba(248,250,252,0.25)" }} />}
+              {website_url && <Globe     size={11} style={{ color: "rgba(248,250,252,0.25)" }} />}
             </div>
           </div>
         </div>
