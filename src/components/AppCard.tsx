@@ -24,7 +24,7 @@ export default function AppCard({ title, description, logo_url, slug, windows_ur
       const isLocalhost = window.location.hostname.includes("localhost") || window.location.hostname.includes("127.0.0.1");
       const domain = isLocalhost ? "localhost:3000" : "flynx.site";
       const protocol = isLocalhost ? "http" : "https";
-      setHref(`${protocol}://${slug}.${domain}`);
+      setHref(`${protocol}://${slug}.${domain}/about`);
     }
   }, [slug]);
 

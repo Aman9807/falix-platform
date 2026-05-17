@@ -46,6 +46,10 @@ export default function Navbar() {
   // Close mobile on route change
   useEffect(() => { setMobileOpen(false); }, [pathname]);
 
+  if (pathname?.startsWith("/app-sites")) {
+    return null;
+  }
+
   return (
     <>
       {/* ── Fixed wrapper ── */}
