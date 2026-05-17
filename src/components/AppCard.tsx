@@ -3,6 +3,8 @@
 import { ArrowRight, Monitor, Cpu, Smartphone } from "lucide-react";
 import Link from "next/link";
 
+import { useEffect, useState } from "react";
+
 interface AppCardProps {
   id: string;
   title: string;
@@ -15,8 +17,19 @@ interface AppCardProps {
 }
 
 export default function AppCard({ title, description, logo_url, slug, windows_url, linux_url, android_url }: AppCardProps) {
+  const [href, setHref] = useState(`/app-sites/${slug}`);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const isLocalhost = window.location.hostname.includes("localhost") || window.location.hostname.includes("127.0.0.1");
+      const domain = isLocalhost ? "localhost:3000" : "flynx.site";
+      const protocol = isLocalhost ? "http" : "https";
+      setHref(`${protocol}://${slug}.${domain}`);
+    }
+  }, [slug]);
+
   return (
-    <Link href={`http://${slug}.localhost:3000`} style={{ textDecoration: "none", display: "block" }}>
+    <Link href={href} style={{ textDecoration: "none", display: "block" }}>
       <div
         className="glass-card"
         style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1rem", cursor: "pointer", transition: "transform 0.2s, background 0.2s" }}

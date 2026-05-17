@@ -11,8 +11,9 @@ async function getAppData(slug: string) {
   return querySnapshot.empty ? null : querySnapshot.docs[0].data();
 }
 
-export default async function AppPlanPage({ params }: { params: { subdomain: string } }) {
-  const appData = await getAppData(params.subdomain);
+export default async function AppPlanPage({ params }: { params: Promise<{ subdomain: string }> }) {
+  const { subdomain } = await params;
+  const appData = await getAppData(subdomain);
 
   if (!appData) return <div>App not found</div>;
 

@@ -16,8 +16,9 @@ async function getAppData(slug: string) {
   return querySnapshot.docs[0].data();
 }
 
-export default async function AboutAppPage({ params }: { params: { subdomain: string } }) {
-  const appData = await getAppData(params.subdomain);
+export default async function AboutAppPage({ params }: { params: Promise<{ subdomain: string }> }) {
+  const { subdomain } = await params;
+  const appData = await getAppData(subdomain);
 
   if (!appData) {
     return (
