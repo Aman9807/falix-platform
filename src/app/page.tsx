@@ -1,3 +1,5 @@
+"use client";
+
 import Hero from "@/components/Hero";
 import SectionReveal from "@/components/SectionReveal";
 import Pricing from "@/components/Pricing";
@@ -5,9 +7,10 @@ import Reviews from "@/components/Reviews";
 import Footer from "@/components/Footer";
 import AppCard from "@/components/AppCard";
 import { db } from "@/lib/firebase";
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 const PLATFORMS = [
   "Next.js", "Firebase", "Framer Motion", "TypeScript",
@@ -16,19 +19,22 @@ const PLATFORMS = [
   "Tailwind CSS", "Vercel", "React", "Firestore",
 ];
 
-async function getApps() {
-  try {
-    const snap = await getDocs(collection(db, "apps"));
-    const data = snap.docs.map(d => ({ id: d.id, ...d.data() })) as any[];
-    return data.sort((a, b) => (b.created_at?.seconds || 0) - (a.created_at?.seconds || 0));
-  } catch (error) { 
-    console.error("Error fetching apps:", error);
-    return []; 
-  }
-}
+export default function Home() {
+  const [apps, setApps] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-export default async function Home() {
-  const apps = await getApps();
+  useEffect(() => {
+    getDocs(collection(db, "apps"))
+      .then(snap => {
+        const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        data.sort((a: any, b: any) => (b.created_at?.seconds || 0) - (a.created_at?.seconds || 0));
+        setApps(data);
+      })
+      .catch(error => {
+        console.error("Error fetching apps:", error);
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <>
@@ -75,7 +81,7 @@ export default async function Home() {
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "1.25rem" }} className="apps-grid">
-            {apps.length > 0 ? apps.map((app) => (
+            {!loading && apps.length > 0 ? apps.map((app) => (
               <AppCard key={app.id} {...app} />
             )) : (
               [1,2,3].map(i => (
