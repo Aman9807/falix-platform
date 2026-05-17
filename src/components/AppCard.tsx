@@ -1,8 +1,6 @@
 "use client";
 
-import { ArrowRight, Monitor, Cpu, Smartphone } from "lucide-react";
-import Link from "next/link";
-
+import { ArrowRight, Monitor, Cpu, Smartphone, Globe } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface AppCardProps {
@@ -14,22 +12,29 @@ interface AppCardProps {
   windows_url?: string;
   linux_url?: string;
   android_url?: string;
+  website_url?: string;
 }
 
-export default function AppCard({ title, description, logo_url, slug, windows_url, linux_url, android_url }: AppCardProps) {
-  const [href, setHref] = useState(`/app-sites/${slug}`);
+export default function AppCard({ title, description, logo_url, slug, windows_url, linux_url, android_url, website_url }: AppCardProps) {
+  const [href, setHref] = useState(`/app-sites/${slug}/about`);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const isLocalhost = window.location.hostname.includes("localhost") || window.location.hostname.includes("127.0.0.1");
-      const domain = isLocalhost ? "localhost:3000" : "flynx.site";
-      const protocol = isLocalhost ? "http" : "https";
-      setHref(`${protocol}://${slug}.${domain}/about`);
+      if (isLocalhost) {
+        // On localhost: use the /app-sites/[slug]/about path since subdomain routing needs DNS
+        setHref(`http://localhost:3000/app-sites/${slug}/about`);
+      } else {
+        // On production: use the real subdomain  
+        setHref(`https://${slug}.flynx.site/about`);
+      }
     }
   }, [slug]);
 
+  const isWebsiteOnly = !!website_url && !windows_url && !linux_url && !android_url;
+
   return (
-    <Link href={href} style={{ textDecoration: "none", display: "block" }}>
+    <a href={href} style={{ textDecoration: "none", display: "block" }}>
       <div
         className="glass-card"
         style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1rem", cursor: "pointer", transition: "transform 0.2s, background 0.2s" }}
@@ -44,6 +49,7 @@ export default function AppCard({ title, description, logo_url, slug, windows_ur
               {windows_url && <Monitor size={11} style={{ color: "rgba(248,250,252,0.25)" }} />}
               {linux_url   && <Cpu size={11} style={{ color: "rgba(248,250,252,0.25)" }} />}
               {android_url && <Smartphone size={11} style={{ color: "rgba(248,250,252,0.25)" }} />}
+              {website_url && <Globe size={11} style={{ color: "rgba(248,250,252,0.25)" }} />}
             </div>
           </div>
         </div>
@@ -51,10 +57,12 @@ export default function AppCard({ title, description, logo_url, slug, windows_ur
           {description}
         </p>
         <div style={{ paddingTop: "0.875rem", borderTop: "1px solid rgba(255,255,255,0.05)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#60a5fa" }}>Explore</span>
+          <span style={{ fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#60a5fa" }}>
+            {isWebsiteOnly ? "Open App" : "Explore"}
+          </span>
           <ArrowRight size={14} style={{ color: "rgba(248,250,252,0.2)" }} />
         </div>
       </div>
-    </Link>
+    </a>
   );
 }
