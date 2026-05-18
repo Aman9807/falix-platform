@@ -1,7 +1,7 @@
 "use client";
 
 import { db } from "@/lib/firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Monitor, Smartphone, Cpu, Laptop, ExternalLink, LayoutGrid, Globe, Info } from "lucide-react";
@@ -21,11 +21,33 @@ export default function DownloadsPage() {
 
   useEffect(() => {
     getDocs(collection(db, "apps"))
-      .then(snap => {
-        const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      .then(async snap => {
+        const data = snap.docs.map(d => ({ id: d.id, ...d.data() as any }));
+        
+        // Auto-update Taabir logo in Firestore database to use the beautiful new golden icon.svg
+        const taabirApp = data.find((a: any) => a.slug === "taabir");
+        if (taabirApp) {
+          const newLogo = `data:image/svg+xml;utf8,<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="fireGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%23FFCA28" /><stop offset="40%" stop-color="%23FF8F00" /><stop offset="100%" stop-color="%23D84315" /></linearGradient><linearGradient id="goldGrad" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" stop-color="%23FFFFFF" /><stop offset="100%" stop-color="%23FFE082" /></linearGradient><filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="%23000000" flood-opacity="0.3"/></filter></defs><rect x="32" y="32" width="448" height="448" rx="112" fill="url(%23fireGrad)" filter="url(%23shadow)" /><rect x="32" y="32" width="448" height="448" rx="112" fill="none" stroke="%23ffffff" stroke-width="6" stroke-opacity="0.4" /><path d="M 160 150 L 352 150 C 370 150 384 164 384 182 C 384 200 370 214 352 214 L 288 214 L 288 352 C 288 370 274 384 256 384 C 238 384 224 370 224 352 L 224 214 L 160 214 C 142 214 128 200 128 182 C 128 164 142 150 160 150 Z" fill="url(%23goldGrad)" filter="url(%23shadow)"/><path d="M 370 90 Q 370 125 335 125 Q 370 125 370 160 Q 370 125 405 125 Q 370 125 370 90 Z" fill="%23FFFFFF" filter="url(%23shadow)"/></svg>`;
+          
+          if (taabirApp.logo_url !== newLogo) {
+            console.log("[Auto-Updater] Syncing Taabir logo in central catalogue...");
+            try {
+              const ref = doc(db, "apps", taabirApp.id);
+              await updateDoc(ref, { logo_url: newLogo });
+              console.log("[Auto-Updater] Successfully updated Taabir logo in Firestore!");
+              taabirApp.logo_url = newLogo;
+            } catch (err) {
+              console.error("[Auto-Updater] Failed to update Taabir logo:", err);
+            }
+          }
+        }
+
         // Sort by created_at desc
         data.sort((a: any, b: any) => (b.created_at?.seconds || 0) - (a.created_at?.seconds || 0));
         setApps(data);
+      })
+      .catch(err => {
+        console.error("Failed to load apps:", err);
       })
       .finally(() => setLoading(false));
   }, []);
