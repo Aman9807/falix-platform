@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import GravityBackground from "@/components/GravityBackground";
 import Navbar from "@/components/Navbar";
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 export const metadata: Metadata = {
   title: "Flynx Platform | Beyond Software",
@@ -17,6 +18,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <main style={{ position: "relative", zIndex: 10 }}>
           {children}
         </main>
+        <SpeedInsights />
       </body>
     </html>
   );
